@@ -23,11 +23,15 @@ def analyze_curl_request():
     response = requests.get(url, headers=headers)
     data = response.json()
 
-    # Analyze the parameters and return results
+def process_response(response):
+    data = response.json()
     print("URL Parameters:")
-    print(url.split('?')[1])
+    print(response.url.split('?')[1])
     print("\nResponse Data:")
     print(json.dumps(data, indent=4, ensure_ascii=False))
+
+    # Analyze the parameters and return results
+    process_response(response)
 
 if __name__ == "__main__":
     analyze_curl_request()
