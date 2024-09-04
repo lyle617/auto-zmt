@@ -4,7 +4,7 @@ import csv
 import os
 import time
 
-def articles_request():
+def analyze_curl_request():
     base_url = 'https://m.toutiao.com/list/'
     params = {
         'tag': '__all__',
@@ -105,4 +105,4 @@ def process_response(response, timestamp):
             writer.writerow(row)
 
 if __name__ == "__main__":
-    articles_request()
+    analyze_curl_request()
