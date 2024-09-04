@@ -74,7 +74,7 @@ def process_response(response, timestamp):
     csv_file_path = f'extracted_data_{timestamp}.csv'
     file_exists = os.path.isfile(csv_file_path)
 
-    titles_written = set()
+    titles_written = {}
 
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
         fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_url', 'publish_time', 'tag']
@@ -85,8 +85,10 @@ def process_response(response, timestamp):
 
         for item in data['data']:
             title = item.get('title', '')
-            if title not in titles_written:
-                writer.writerow({
+            publish_time = item.get('publish_time', '')
+
+            if title not in titles_written or publish_time > titles_written[title]['publish_time']:
+                titles_written[title] = {
                     'title': title,
                     'media_name': item.get('media_name', ''),
                     'source': item.get('source', ''),
@@ -95,10 +97,12 @@ def process_response(response, timestamp):
                     'comment_count': item.get('comment_count', 0),
                     'like_count': item.get('like_count', 0),
                     'share_url': item.get('share_url', ''),
-                    'publish_time': item.get('publish_time', ''),
+                    'publish_time': publish_time,
                     'tag': item.get('tag', '')
-                })
-                titles_written.add(title)
+                }
+
+        for title, row in titles_written.items():
+            writer.writerow(row)
 
 if __name__ == "__main__":
     analyze_curl_request()
