@@ -5,7 +5,20 @@ import os
 import time
 
 def analyze_curl_request():
-    url = 'https://m.toutiao.com/list/?tag=__all__&max_time=1725409291&max_behot_time=1725409291&ac=wap&count=20&format=json_raw&_signature=oxib-wAAxdpfXCDdxPIW2KMYm-&i=1725409291&as=A116960D97ABEFA&cp=66D7EB3EAFCA6E1&aid=1698'
+    base_url = 'https://m.toutiao.com/list/'
+    params = {
+        'tag': '__all__',
+        'max_time': '1725409291',
+        'max_behot_time': '1725409291',
+        'ac': 'wap',
+        'count': '20',
+        'format': 'json_raw',
+        '_signature': 'oxib-wAAxdpfXCDdxPIW2KMYm-',
+        'i': '1725409291',
+        'as': 'A116960D97ABEFA',
+        'cp': '66D7EB3EAFCA6E1',
+        'aid': '1698'
+    }
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
@@ -30,10 +43,10 @@ def analyze_curl_request():
 
     while page < max_pages:
         if page == 0:
-            response = requests.get(url, headers=headers)
+            response = requests.get(base_url, headers=headers, params=params)
         else:
-            params = {'max_behot_time': next_max_behot_time}
-            response = requests.get(url, headers=headers, params=params)
+            params['max_behot_time'] = next_max_behot_time
+            response = requests.get(base_url, headers=headers, params=params)
 
         data = response.json()
 
