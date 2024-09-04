@@ -55,8 +55,7 @@ def analyze_curl_request():
         process_response(data, timestamp)
         output_data = {
             "response": response.text,
-            "data": data,
-            "max_behot_time": data.get('next', {}).get('max_behot_time')
+            "max_behot_time": next_max_behot_time
         }
         print(json.dumps(output_data, ensure_ascii=False, indent=4))
 
