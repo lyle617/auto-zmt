@@ -10,7 +10,7 @@ def analyze_curl_request():
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Cookie': '……',
+        'Cookie': os.getenv('CRAWLER_COOKIE'),
         'Pragma': 'no-cache',
         'Referer': 'https://m.toutiao.com/?&source=m_redirect',
         'Sec-Fetch-Dest': 'empty',
@@ -30,7 +30,9 @@ def process_response(response):
     if not data.get('data'):
         return
 
-    csv_file_path = 'extracted_data.csv'
+    import time
+    timestamp = str(int(time.time()))
+    csv_file_path = f'extracted_data_{timestamp}.csv'
     file_exists = os.path.isfile(csv_file_path)
 
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
