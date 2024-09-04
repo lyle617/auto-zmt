@@ -43,13 +43,11 @@ def analyze_curl_request():
 
         page += 1
 
-def process_response(response):
+def process_response(response, timestamp):
     data = response.json()
     if not data.get('data'):
         return
 
-    import time
-    timestamp = str(int(time.time()))
     csv_file_path = f'extracted_data_{timestamp}.csv'
     file_exists = os.path.isfile(csv_file_path)
 
