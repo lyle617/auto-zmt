@@ -74,6 +74,8 @@ def process_response(response, timestamp):
     csv_file_path = f'extracted_data_{timestamp}.csv'
     file_exists = os.path.isfile(csv_file_path)
 
+    titles_written = set()
+
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
         fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_url', 'publish_time', 'tag']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -82,18 +84,21 @@ def process_response(response, timestamp):
             writer.writeheader()
 
         for item in data['data']:
-            writer.writerow({
-                'title': item.get('title', ''),
-                'media_name': item.get('media_name', ''),
-                'source': item.get('source', ''),
-                'abstract': item.get('abstract', ''),
-                'article_url': item.get('article_url', ''),
-                'comment_count': item.get('comment_count', 0),
-                'like_count': item.get('like_count', 0),
-                'share_url': item.get('share_url', ''),
-                'publish_time': item.get('publish_time', ''),
-                'tag': item.get('tag', '')
-            })
+            title = item.get('title', '')
+            if title not in titles_written:
+                writer.writerow({
+                    'title': title,
+                    'media_name': item.get('media_name', ''),
+                    'source': item.get('source', ''),
+                    'abstract': item.get('abstract', ''),
+                    'article_url': item.get('article_url', ''),
+                    'comment_count': item.get('comment_count', 0),
+                    'like_count': item.get('like_count', 0),
+                    'share_url': item.get('share_url', ''),
+                    'publish_time': item.get('publish_time', ''),
+                    'tag': item.get('tag', '')
+                })
+                titles_written.add(title)
 
 if __name__ == "__main__":
     analyze_curl_request()
