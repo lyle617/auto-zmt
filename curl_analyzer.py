@@ -22,8 +22,26 @@ def analyze_curl_request():
         'sec-ch-ua-platform': '"Android"'
     }
 
-    response = requests.get(url, headers=headers)
-    process_response(response)
+    page = 0
+    max_pages = 10
+    next_max_behot_time = None
+
+    while page < max_pages:
+        params = {'max_behot_time': next_max_behot_time} if next_max_behot_time else {}
+        response = requests.get(url, headers=headers, params=params)
+        data = response.json()
+
+        if not data.get('data'):
+            break
+
+        process_response(data)
+        print(f"Fetched {len(data['data'])} articles in page {page + 1}")
+
+        next_max_behot_time = data.get('next', {}).get('max_behot_time')
+        if not next_max_behot_time:
+            break
+
+        page += 1
 
 def process_response(response):
     data = response.json()
