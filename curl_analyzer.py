@@ -60,7 +60,8 @@ def analyze_curl_request():
         }
         print(json.dumps(output_data, ensure_ascii=False, indent=4))
 
-        next_max_behot_time = data.get('next', {}).get('max_behot_time')
+        behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
+        next_max_behot_time = min(behot_times) if behot_times else None
         if not next_max_behot_time:
             break
 
