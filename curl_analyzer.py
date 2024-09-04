@@ -2,6 +2,7 @@ import requests
 import json
 import csv
 import os
+import time
 
 def analyze_curl_request():
     url = 'https://m.toutiao.com/list/?tag=__all__&max_time=1725409291&max_behot_time=1725409291&ac=wap&count=20&format=json_raw&_signature=oxib-wAAxdpfXCDdxPIW2KMYm-&i=1725409291&as=A116960D97ABEFA&cp=66D7EB3EAFCA6E1&aid=1698'
@@ -25,6 +26,7 @@ def analyze_curl_request():
     page = 0
     max_pages = 10
     next_max_behot_time = None
+    timestamp = int(time.time())
 
     while page < max_pages:
         params = {'max_behot_time': next_max_behot_time} if next_max_behot_time else {}
@@ -34,7 +36,7 @@ def analyze_curl_request():
         if not data.get('data'):
             break
 
-        process_response(data)
+        process_response(data, timestamp)
         print(f"Fetched {len(data['data'])} articles in page {page + 1}")
 
         next_max_behot_time = data.get('next', {}).get('max_behot_time')
