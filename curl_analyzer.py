@@ -9,7 +9,6 @@ def analyze_curl_request():
     params = {
         'tag': '__all__',
         'max_time': '1725409291',
-        'max_behot_time': '1725409291',
         'ac': 'wap',
         'count': '20',
         'format': 'json_raw',
