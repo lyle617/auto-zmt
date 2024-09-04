@@ -46,7 +46,7 @@ def analyze_curl_request():
         page += 1
 
 def process_response(response, timestamp):
-    data = response.json()
+    data = response
     if not data.get('data'):
         return
 
