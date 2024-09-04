@@ -4,7 +4,12 @@ import csv
 import os
 
 def analyze_curl_request():
-    url = 'https://m.toutiao.com/list/?tag=__all__&max_time=1725409291&max_behot_time=1725409291&ac=wap&count=20&format=json_raw&_signature=oxib-wAAxdpfXCDdxPIW2KMYm-&i=1725409291&as=A116960D97ABEFA&cp=66D7EB3EAFCA6E1&aid=1698'
+    page = 1
+    max_pages = 10
+    max_behot_time = None
+
+    while page <= max_pages:
+        url = f'https://m.toutiao.com/list/?tag=__all__&max_time=1725409291&max_behot_time={max_behot_time or 1725409291}&ac=wap&count=20&format=json_raw&_signature=oxib-wAAxdpfXCDdxPIW2KMYm-&i=1725409291&as=A116960D97ABEFA&cp=66D7EB3EAFCA6E1&aid=1698'
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
@@ -22,8 +27,19 @@ def analyze_curl_request():
         'sec-ch-ua-platform': '"Android"'
     }
 
-    response = requests.get(url, headers=headers)
-    process_response(response)
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        if not data.get('data'):
+            break
+
+        process_response(response)
+        print(f"Page {page}: Fetched {len(data['data'])} articles")
+
+        if not data.get('has_more'):
+            break
+
+        max_behot_time = data['next']['max_behot_time']
+        page += 1
 
 def process_response(response):
     data = response.json()
