@@ -23,15 +23,37 @@ def analyze_curl_request():
     response = requests.get(url, headers=headers)
     data = response.json()
 
+import csv
+import os
+
 def process_response(response):
     data = response.json()
-    print("URL Parameters:")
-    print(response.url.split('?')[1])
-    print("\nResponse Data:")
-    print(json.dumps(data, indent=4, ensure_ascii=False))
+    if not data.get('data'):
+        return
 
-    # Analyze the parameters and return results
-    process_response(response)
+    csv_file_path = 'extracted_data.csv'
+    file_exists = os.path.isfile(csv_file_path)
+
+    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
+        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_url', 'publish_time', 'tag']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        for item in data['data']:
+            writer.writerow({
+                'title': item.get('title', ''),
+                'media_name': item.get('media_name', ''),
+                'source': item.get('source', ''),
+                'abstract': item.get('abstract', ''),
+                'article_url': item.get('article_url', ''),
+                'comment_count': item.get('comment_count', 0),
+                'like_count': item.get('like_count', 0),
+                'share_url': item.get('share_url', ''),
+                'publish_time': item.get('publish_time', ''),
+                'tag': item.get('tag', '')
+            })
 
 if __name__ == "__main__":
     analyze_curl_request()
