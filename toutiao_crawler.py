@@ -77,7 +77,7 @@ def process_response(response, timestamp):
     titles_written = {}
 
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
-        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_url', 'publish_time', 'tag']
+        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_count', 'share_url', 'publish_time', 'tag']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         if not file_exists:
@@ -94,9 +94,10 @@ def process_response(response, timestamp):
                     'source': item.get('source', ''),
                     'abstract': item.get('abstract', ''),
                     'article_url': item.get('article_url', ''),
-                    'comment_count': item.get('comment_count', 0),
-                    'like_count': item.get('like_count', 0),
-                    'share_url': item.get('share_url', ''),
+                'comment_count': item.get('comment_count', 0),
+                'like_count': item.get('like_count', 0),
+                'share_count': item.get('share_count', 0),
+                'share_url': item.get('share_url', ''),
                     'publish_time': publish_time,
                     'tag': item.get('tag', '')
                 }
