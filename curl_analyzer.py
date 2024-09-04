@@ -1,5 +1,7 @@
 import requests
 import json
+import csv
+import os
 
 def analyze_curl_request():
     url = 'https://m.toutiao.com/list/?tag=__all__&max_time=1725409291&max_behot_time=1725409291&ac=wap&count=20&format=json_raw&_signature=oxib-wAAxdpfXCDdxPIW2KMYm-&i=1725409291&as=A116960D97ABEFA&cp=66D7EB3EAFCA6E1&aid=1698'
@@ -22,9 +24,6 @@ def analyze_curl_request():
 
     response = requests.get(url, headers=headers)
     process_response(response)
-
-import csv
-import os
 
 def process_response(response):
     data = response.json()
