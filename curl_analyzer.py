@@ -21,7 +21,7 @@ def analyze_curl_request():
     }
 
     response = requests.get(url, headers=headers)
-    data = response.json()
+    process_response(response)
 
 import csv
 import os
