@@ -29,8 +29,12 @@ def analyze_curl_request():
     timestamp = int(time.time())
 
     while page < max_pages:
-        params = {'max_behot_time': next_max_behot_time} if next_max_behot_time else {}
-        response = requests.get(url, headers=headers, params=params)
+        if page == 0:
+            response = requests.get(url, headers=headers)
+        else:
+            params = {'max_behot_time': next_max_behot_time}
+            response = requests.get(url, headers=headers, params=params)
+
         data = response.json()
 
         if not data.get('data'):
