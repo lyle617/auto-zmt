@@ -37,9 +37,12 @@ def analyze_curl_request():
             break
 
         process_response(data, timestamp)
-        print(f"Fetched {len(data['data'])} articles in page {page + 1}")
-        print(f"Data: {data}")
-        print(f"Max Behot Time: {data.get('next', {}).get('max_behot_time')}")
+        output_data = {
+            "response": response.text,
+            "data": data,
+            "max_behot_time": data.get('next', {}).get('max_behot_time')
+        }
+        print(json.dumps(output_data, ensure_ascii=False, indent=4))
 
         next_max_behot_time = data.get('next', {}).get('max_behot_time')
         if not next_max_behot_time:
