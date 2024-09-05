@@ -36,10 +36,11 @@ def articles_request():
     }
 
     page = 0
-    max_pages = 10
+    max_pages = 100
     next_max_behot_time = None
     timestamp = int(time.time())
 
+    request_count = 0
     while page < max_pages:
         if page == 0:
             response = requests.get(base_url, headers=headers, params=params)
@@ -65,19 +66,25 @@ def articles_request():
             break
 
         page += 1
+        request_count += 1
+        if request_count % 10 == 0:
+            time.sleep(2)
 
 def process_response(response, timestamp):
     data = response
     if not data.get('data'):
         return
 
-    csv_file_path = f'extracted_data_{timestamp}.csv'
+    if not os.path.exists('articles'):
+        os.makedirs('articles')
+    csv_file_path = os.path.join('articles', f'extracted_data_{timestamp}.csv')
+    top_articles_path = os.path.join('articles', 'top_articles.csv')
     file_exists = os.path.isfile(csv_file_path)
 
     titles_written = {}
 
     with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
-        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_count', 'share_url', 'publish_time', 'tag']
+        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_count', 'share_url', 'publish_time', 'tag', 'read_count']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         if not file_exists:
@@ -87,22 +94,60 @@ def process_response(response, timestamp):
             title = item.get('title', '')
             publish_time = item.get('publish_time', '')
 
-            if title not in titles_written or publish_time > titles_written[title]['publish_time']:
-                titles_written[title] = {
-                    'title': title,
-                    'media_name': item.get('media_name', ''),
-                    'source': item.get('source', ''),
-                    'abstract': item.get('abstract', ''),
-                    'article_url': item.get('article_url', ''),
-                'comment_count': item.get('comment_count', 0),
-                'like_count': item.get('like_count', 0),
-                'share_count': item.get('share_count', 0),
-                'share_url': item.get('share_url', ''),
-                    'publish_time': publish_time,
-                    'tag': item.get('tag', '')
-                }
+            if item.get('like_count', 0) > 100 and item.get('comment_count', 0) > 100:
+                if title not in titles_written or publish_time >= titles_written[title]['publish_time']:
+                    titles_written[title] = {
+                        'title': title,
+                        'media_name': item.get('media_name', ''),
+                        'source': item.get('source', ''),
+                        'abstract': item.get('abstract', ''),
+                        'article_url': item.get('article_url', ''),
+                        'comment_count': item.get('comment_count', 0),
+                        'like_count': item.get('like_count', 0),
+                        'publish_time': publish_time,
+                        'tag': item.get('tag', '')
+                    }
 
         for title, row in titles_written.items():
+            writer.writerow({
+                'title': row['title'],
+                'media_name': row['media_name'],
+                'source': row['source'],
+                'abstract': row['abstract'],
+                'article_url': row['article_url'],
+                'comment_count': row['comment_count'],
+                'like_count': row['like_count'],
+                'publish_time': row['publish_time'],
+                'tag': row['tag']
+            })
+
+    # Merge with top_articles.csv and sort by like_count
+    top_articles = []
+    if os.path.exists(top_articles_path):
+        with open(top_articles_path, mode='r', encoding='utf-8') as top_file:
+            reader = csv.DictReader(top_file)
+            top_articles = list(reader)
+
+    unique_titles = set()
+    deduplicated_articles = []
+
+    for title, row in titles_written.items():
+        if title not in unique_titles:
+            unique_titles.add(title)
+            deduplicated_articles.append(row)
+
+    for article in top_articles:
+        if article['title'] not in unique_titles:
+            unique_titles.add(article['title'])
+            deduplicated_articles.append(article)
+
+    deduplicated_articles = sorted(deduplicated_articles, key=lambda x: int(x['like_count']), reverse=True)[:500]
+
+    with open(top_articles_path, mode='w', newline='', encoding='utf-8') as top_file:
+        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'publish_time', 'tag']
+        writer = csv.DictWriter(top_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in deduplicated_articles:
             writer.writerow(row)
 
 if __name__ == "__main__":
