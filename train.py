@@ -11,8 +11,8 @@ def deepseek_api_call(titles):
     data = {
         'model': 'deepseek-chat',
         'messages': [
-            {'role': 'system', 'content': 'You are a helpful assistant.'},
-            {'role': 'user', 'content': ' '.join(titles)}
+            {'role': 'system', 'content': 'You are a senior Today\'s Headline article creator.'},
+            {'role': 'user', 'content': 'Analyze the following article titles for their patterns and characteristics: ' + ' '.join(titles)}
         ]
     }
 
