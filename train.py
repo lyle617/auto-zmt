@@ -5,12 +5,17 @@ import os
 def deepseek_api_call(titles):
     api_url = "https://api.deepseek.com/v1/models"
     headers = {
-        'Authorization': 'Bearer YOUR_API_KEY',
+        'Authorization': 'Bearer sk-c66099d062ed4ae08008318e12a76e1f',
         'Content-Type': 'application/json'
     }
     data = {
-        'titles': titles
+        'model': 'deepseek-chat',
+        'messages': [
+            {'role': 'system', 'content': 'You are a helpful assistant.'},
+            {'role': 'user', 'content': ' '.join(titles)}
+        ]
     }
+
     response = requests.post(api_url, headers=headers, json=data)
     if response.status_code == 200:
         print("API call successful")
