@@ -4,7 +4,10 @@ import json
 import csv
 import os
 import time
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 def articles_request():
     base_url = 'https://m.toutiao.com/list/'
     params = {
