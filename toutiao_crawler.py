@@ -111,7 +111,7 @@ def process_response(response, timestamp):
 
             for item in data['data']:
                 title = item.get('title', '')
-                publish_time = datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
+                publish_time = datetime.datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
 
                 if item.get('like_count', 0) > 100 and item.get('comment_count', 0) > 100:
                     if title not in titles_written:
