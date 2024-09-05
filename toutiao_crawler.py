@@ -45,20 +45,21 @@ def articles_request():
     all_data = []
 
     while page < max_pages:
-        if page == 0:
-            response = requests.get(base_url, headers=headers, params=params)
-        else:
+        if page > 0:
             params['max_behot_time'] = next_max_behot_time
-            response = requests.get(base_url, headers=headers, params=params)
-
-        data = response.json()
+        try:
+            response = requests.get(base_url, headers=headers, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
+            break
 
         if not data.get('data'):
             break
 
         all_data.extend(data['data'])
         output_data = {
-            # "response": response.text,
             "max_behot_time": next_max_behot_time
         }
         print(json.dumps(output_data, ensure_ascii=False, indent=4))
@@ -72,7 +73,6 @@ def articles_request():
         request_count += 1
         if request_count % 10 == 0:
             time.sleep(2)
-
     # Remove duplicates
     unique_data = []
     for item in all_data:
@@ -97,49 +97,38 @@ def process_response(response, timestamp):
 
     titles_written = {}
 
-    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
-        fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'share_count', 'share_url', 'publish_time', 'tag', 'read_count', 'is_yaowen', 'article_sub_type']
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    try:
+        with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
+            fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'publish_time', 'tag', 'is_yaowen', 'article_sub_type']
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
-        if not file_exists:
-            writer.writeheader()
+            if not file_exists:
+                writer.writeheader()
 
-        for item in data['data']:
-            title = item.get('title', '')
-            from datetime import datetime
-            publish_time = datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
+            for item in data['data']:
+                title = item.get('title', '')
+                publish_time = datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
 
-            if item.get('like_count', 0) > 100 and item.get('comment_count', 0) > 100:
-                if title not in titles_written:
-                    titles_written[title] = {
-                        'title': title,
-                        'media_name': item.get('media_name', ''),
-                        'source': item.get('source', ''),
-                        'abstract': item.get('abstract', ''),
-                        'article_url': item.get('article_url', ''),
-                        'comment_count': item.get('comment_count', 0),
-                        'like_count': item.get('like_count', 0),
-                        'publish_time': publish_time,
-                        'tag': item.get('tag', ''),
-                        'is_yaowen': item.get('log_pb', {}).get('is_yaowen', ''),
-                        'article_sub_type': item.get('article_sub_type', '')
-                    }
+                if item.get('like_count', 0) > 100 and item.get('comment_count', 0) > 100:
+                    if title not in titles_written:
+                        titles_written[title] = {
+                            'title': title,
+                            'media_name': item.get('media_name', ''),
+                            'source': item.get('source', ''),
+                            'abstract': item.get('abstract', ''),
+                            'article_url': item.get('article_url', ''),
+                            'comment_count': item.get('comment_count', 0),
+                            'like_count': item.get('like_count', 0),
+                            'publish_time': publish_time,
+                            'tag': item.get('tag', ''),
+                            'is_yaowen': item.get('log_pb', {}).get('is_yaowen', ''),
+                            'article_sub_type': item.get('article_sub_type', '')
+                        }
 
-        for title, row in titles_written.items():
-            writer.writerow({
-                'title': row['title'],
-                'media_name': row['media_name'],
-                'source': row['source'],
-                'abstract': row['abstract'],
-                'article_url': row['article_url'],
-                'comment_count': row['comment_count'],
-                'like_count': row['like_count'],
-                'publish_time': row['publish_time'],
-                'tag': row['tag'],
-                'is_yaowen': row['is_yaowen'],
-                'article_sub_type': row['article_sub_type']
-            })
-
+            for title, row in titles_written.items():
+                writer.writerow(row)
+    except Exception as e:
+        print(f"Error processing response: {e}")
     # Merge with top_articles.csv and sort by like_count
     top_articles = []
     if os.path.exists(top_articles_path):
