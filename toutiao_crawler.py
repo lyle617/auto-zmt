@@ -41,6 +41,9 @@ def articles_request():
     timestamp = int(time.time())
 
     request_count = 0
+    processed_titles = set()
+    all_data = []
+
     while page < max_pages:
         if page == 0:
             response = requests.get(base_url, headers=headers, params=params)
@@ -53,7 +56,7 @@ def articles_request():
         if not data.get('data'):
             break
 
-        process_response(data, timestamp)
+        all_data.extend(data['data'])
         output_data = {
             "response": response.text,
             "max_behot_time": next_max_behot_time
@@ -70,6 +73,16 @@ def articles_request():
         if request_count % 10 == 0:
             time.sleep(2)
 
+    # Remove duplicates
+    unique_data = []
+    for item in all_data:
+        title = item.get('title', '')
+        if title not in processed_titles:
+            processed_titles.add(title)
+            unique_data.append(item)
+
+    # Process unique data
+    process_response({'data': unique_data}, timestamp)
 def process_response(response, timestamp):
     data = response
     if not data.get('data'):
