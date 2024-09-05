@@ -58,7 +58,7 @@ def articles_request():
 
         all_data.extend(data['data'])
         output_data = {
-            "response": response.text,
+            # "response": response.text,
             "max_behot_time": next_max_behot_time
         }
         print(json.dumps(output_data, ensure_ascii=False, indent=4))
@@ -83,6 +83,7 @@ def articles_request():
 
     # Process unique data
     process_response({'data': unique_data}, timestamp)
+
 def process_response(response, timestamp):
     data = response
     if not data.get('data'):
