@@ -96,7 +96,7 @@ def process_response(response, timestamp):
             publish_time = datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
 
             if item.get('like_count', 0) > 100 and item.get('comment_count', 0) > 100:
-                if title not in titles_written or publish_time >= titles_written[title]['publish_time']:
+                if title not in titles_written:
                     titles_written[title] = {
                         'title': title,
                         'media_name': item.get('media_name', ''),
