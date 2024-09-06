@@ -40,7 +40,7 @@ def articles_request():
     }
 
     page = 0
-    max_pages = 100
+    max_pages = 10
     next_max_behot_time = None
     timestamp = int(time.time())
 
