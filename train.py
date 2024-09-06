@@ -8,7 +8,7 @@ def deepseek_api_call(titles):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer sk-c66099d062ed4ae08008318e12a76e1f'
+        'Authorization': 'Bearer {token}'
     }
     payload = json.dumps({
       "messages": [
