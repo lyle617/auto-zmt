@@ -36,4 +36,4 @@ jobs:
         git add articles
         git diff --quiet && git diff --staged --quiet || git commit -m "Update articles from crawler"
         echo ${PAT}
-        git push https://${PAT}@github.com/${{ github.repository }}.git
+        git push https://${PAT}@github.com/lyle617/auto-zmt.git/
