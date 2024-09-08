@@ -38,4 +38,4 @@ jobs:
         echo "# git commit changes"
         git diff --quiet && git diff --staged --quiet || git commit -m "Update articles from crawler"
         echo "# git push changes"
-        git push https://${PAT} main:main
+        git push https://${PAT}@github.com/lyle617/auto-zmt.git main:main
