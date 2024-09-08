@@ -40,7 +40,7 @@ def articles_request():
     }
 
     page = 0
-    max_pages = 10
+    max_pages = os.getenv('CRAWLER_MAX_PAGES'),
     next_max_behot_time = None
     timestamp = int(time.time())
 
