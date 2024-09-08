@@ -9,7 +9,7 @@ def deepseek_api_call(titles):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer {token}'
+        'Authorization': 'Bearer ' + os.getenv('DEEPSEEK_TOKEN')
     }
     payload = json.dumps({
       "messages": [
