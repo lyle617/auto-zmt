@@ -2,6 +2,7 @@ import requests
 import json
 import csv
 import os
+from datetime import datetime
 
 def deepseek_api_call(titles):
     api_url = "https://api.deepseek.com/chat/completions"
@@ -42,7 +43,19 @@ def deepseek_api_call(titles):
     response = requests.request("POST", api_url, headers=headers, data=payload)
     if response.status_code == 200:
         print("API call successful")
-        print(response.json())
+        analysis_result = response.json()
+        print(analysis_result)
+
+        # Create the ./model directory if it doesn't exist
+        model_dir = './model'
+        if not os.path.exists(model_dir):
+            os.makedirs(model_dir)
+
+        # Save the analysis result to a markdown file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        markdown_file_path = os.path.join(model_dir, f'analysis_result_{timestamp}.md')
+        with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
+            md_file.write(f"# Analysis Result\n\n{json.dumps(analysis_result, indent=4)}")
     else:
         print("API call failed with status code:", response.status_code)
 
