@@ -23,7 +23,7 @@ def deepseek_api_call(titles):
           "role": "system"
         },
         {
-          "content": '请分析以下高点击数、高评论数的文章的标题，总结文章标题的撰写范式：' + ' '.join(titles),
+          "content": '请分析以下高点击数、高评论数的文章的标题，详细归类总结文章标题的撰写范式：' + ' '.join(titles),
           "role": "user"
         }
       ],
