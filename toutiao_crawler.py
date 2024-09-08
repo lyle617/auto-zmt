@@ -164,6 +164,7 @@ def process_response(response, timestamp):
         writer.writeheader()
         for row in deduplicated_articles:
             writer.writerow(row)
+        logger.info(f"Wrote {len(deduplicated_articles)} articles to {top_articles_path}")
 
 if __name__ == "__main__":
     articles_request()
