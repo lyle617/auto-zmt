@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
 
+    env:
+      CRAWLER_MAX_PAGES: 100
+      CRAWLER_COOKIE: ${{ secrets.CRAWLER_COOKIE }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
