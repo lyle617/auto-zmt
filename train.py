@@ -50,7 +50,7 @@ def deepseek_api_call(titles):
     if response.status_code == 200:
         logging.info("API call successful")
         analysis_result = response.json()
-        logging.info("API response: %s", analysis_result)
+        logging.info("API response: %s", analysis_result['choices'][0]['message']['content'])
 
         # Create the ./model directory if it doesn't exist
         model_dir = './model'
