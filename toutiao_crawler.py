@@ -8,6 +8,9 @@ import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Add a logger
+logger = logging.getLogger(__name__)
 def articles_request():
     base_url = 'https://m.toutiao.com/list/'
     params = {
@@ -49,6 +52,7 @@ def articles_request():
     all_data = []
 
     while page < max_pages:
+        logger.info(f"Processing page {page + 1} of {max_pages}")
         if page > 0:
             params['max_behot_time'] = next_max_behot_time
         try:
@@ -56,21 +60,23 @@ def articles_request():
             response.raise_for_status()
             data = response.json()
         except requests.RequestException as e:
-            print(f"Request failed: {e}")
+            logger.error(f"Request failed: {e}")
             break
 
         if not data.get('data'):
+            logger.info("No more data to process")
             break
 
         all_data.extend(data['data'])
         output_data = {
             "max_behot_time": next_max_behot_time
         }
-        print(json.dumps(output_data, ensure_ascii=False, indent=4))
+        logger.debug(json.dumps(output_data, ensure_ascii=False, indent=4))
 
         behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
         next_max_behot_time = min(behot_times) if behot_times else None
         if not next_max_behot_time:
+            logger.info("No more behot_time to process")
             break
 
         page += 1
