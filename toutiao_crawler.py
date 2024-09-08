@@ -52,7 +52,11 @@ def articles_request():
     all_data = []
 
     while page < max_pages:
-        logger.info(f"Processing page {page + 1} of {max_pages}, max_behot_time: {next_max_behot_time}")
+        if next_max_behot_time is not None:
+            max_behot_time_readable = datetime.datetime.fromtimestamp(next_max_behot_time).strftime('%Y-%m-%d %H:%M:%S')
+            logger.info(f"Processing page {page + 1} of {max_pages}, max_behot_time: {max_behot_time_readable}")
+        else:
+            logger.info(f"Processing page {page + 1} of {max_pages}, max_behot_time: None")
         if page > 0:
             params['max_behot_time'] = next_max_behot_time
         try:
