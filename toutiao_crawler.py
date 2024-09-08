@@ -71,7 +71,8 @@ def articles_request():
             logger.info("No more data to process")
             break
 
-        all_data.extend(data['data'])
+        filtered_data = [item for item in data['data'] if item.get('source', '') != '央视网']
+        all_data.extend(filtered_data)
 
         behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
         next_max_behot_time = min(behot_times) if behot_times else None
