@@ -103,7 +103,7 @@ def process_response(response, timestamp):
 
     try:
         with open(csv_file_path, mode='a', newline='', encoding='utf-8') as csv_file:
-            fieldnames = ['title', 'media_name', 'source', 'abstract', 'article_url', 'comment_count', 'like_count', 'publish_time', 'tag', 'is_yaowen', 'article_sub_type']
+            fieldnames = ['title', 'publish_time', 'like_count', 'comment_count', 'media_name', 'source', 'abstract', 'article_url', 'tag', 'is_yaowen', 'article_sub_type']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
             if not file_exists:
@@ -117,13 +117,13 @@ def process_response(response, timestamp):
                     if title not in titles_written:
                         titles_written[title] = {
                             'title': title,
+                            'publish_time': publish_time,
+                            'like_count': item.get('like_count', 0),
+                            'comment_count': item.get('comment_count', 0),
                             'media_name': item.get('media_name', ''),
                             'source': item.get('source', ''),
                             'abstract': item.get('abstract', ''),
                             'article_url': item.get('article_url', ''),
-                            'comment_count': item.get('comment_count', 0),
-                            'like_count': item.get('like_count', 0),
-                            'publish_time': publish_time,
                             'tag': item.get('tag', ''),
                             'is_yaowen': item.get('log_pb', {}).get('is_yaowen', ''),
                             'article_sub_type': item.get('article_sub_type', '')
