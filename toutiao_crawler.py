@@ -82,8 +82,7 @@ def articles_request():
 
         page += 1
         request_count += 1
-        if request_count % 10 == 0:
-            time.sleep(2)
+        time.sleep(5)
     # Remove duplicates
     unique_data = []
     for item in all_data:
