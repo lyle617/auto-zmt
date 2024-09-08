@@ -52,7 +52,7 @@ def articles_request():
     all_data = []
 
     while page < max_pages:
-        logger.info(f"Processing page {page + 1} of {max_pages}")
+        logger.info(f"Processing page {page + 1} of {max_pages}, max_behot_time: {next_max_behot_time}")
         if page > 0:
             params['max_behot_time'] = next_max_behot_time
         try:
@@ -68,10 +68,6 @@ def articles_request():
             break
 
         all_data.extend(data['data'])
-        output_data = {
-            "max_behot_time": next_max_behot_time
-        }
-        logger.debug(json.dumps(output_data, ensure_ascii=False, indent=4))
 
         behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
         next_max_behot_time = min(behot_times) if behot_times else None
