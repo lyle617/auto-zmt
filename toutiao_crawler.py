@@ -133,6 +133,7 @@ def process_response(response, timestamp):
 
             for title, row in titles_written.items():
                 writer.writerow(row)
+            logger.info(f"Wrote {len(titles_written)} articles to {csv_file_path}")
     except Exception as e:
         print(f"Error processing response: {e}")
     # Merge with top_articles.csv and sort by like_count
