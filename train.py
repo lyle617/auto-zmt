@@ -63,7 +63,7 @@ def deepseek_api_call(titles):
         markdown_file_path = os.path.join(model_dir, f'analysis_result_{timestamp}.md')
         logging.info("Saving analysis result to %s", markdown_file_path)
         with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
-            md_file.write(f"# Analysis Result\n\n{json.dumps(analysis_result, indent=4)}")
+            md_file.write(f"# Analysis Result\n\n{analysis_result['choices'][0]['message']['content']}")
     else:
         logging.error("API call failed with status code: %s", response.status_code)
 
