@@ -27,9 +27,7 @@ jobs:
       run: |
         python toutiao_crawler.py
 
-    - name: Commit and push changes
-      env:
-        PAT: ${{ secrets.PAT }}
+    - name: Commit
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -37,5 +35,8 @@ jobs:
         git add articles
         echo "# git commit changes"
         git diff --quiet && git diff --staged --quiet || git commit -m "Update articles from crawler"
-        echo "# git push changes"
-        git push https://${PAT}@github.com/lyle617/auto-zmt.git main:main
+
+    - name: Push
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PAT }}
