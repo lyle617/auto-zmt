@@ -74,17 +74,9 @@ def read_titles_from_csv(file_path):
     with open(file_path, mode='r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            titles.append((row['title'], float(row['like_rate'])))
+            titles.append(row['title'])
     logging.info("Found %d titles", len(titles))
-    
-    # Sort titles by like rate in descending order
-    titles.sort(key=lambda x: x[1], reverse=True)
-    
-    # Select the top 150 titles
-    top_titles = [title for title, like_rate in titles[:150]]
-    
-    logging.info("Selected %d titles with the highest like rate", len(top_titles))
-    return top_titles
+    return titles
 
 if __name__ == "__main__":
     logging.info("Starting main execution")
