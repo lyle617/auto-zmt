@@ -30,7 +30,7 @@ jobs:
 
     - name: Run crawler
       run: |
-        python toutiao_crawler.py
+        python src/toutiao_crawler.py
 
     - name: Commit
       run: |
