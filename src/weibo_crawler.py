@@ -100,6 +100,43 @@ def save_comments_to_csv(comments, file_path):
         logging.info("Saved %d new comments to %s", new_comments, file_path)
         logging.info("Skipped %d duplicate comments", duplicate_comments)
 
+def fetch_weibo_detail(id):
+    base_url = 'https://m.weibo.cn/statuses/extend'
+    params = {
+        'id': id
+    }
+
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+        'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'cache-control': 'no-cache',
+        'cookie': 'WEIBOCN_FROM=1110006030; SCF=AuIlz2ZhZeGfr-nzWary7cNSnUvss9hXdXGcX8GxbOm3JMCMl-en38dhOk0nEhLpNI6dAEOS8aU2Lu-SfAZaNmE.; SUB=_2A25L2qMIDeRhGedI7FEZ9C3LzzyIHXVombrArDV6PUJbktAGLWXHkW1NVtqVtztQwix2KdMiQYl5HT4mKz4mj_Od; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWau3EFDRIdmcTh_LopJe1p5NHD95QpSoM01hB0S0B7Ws4Dqcji9J9J9LvAwrDA; SSOLoginState=1725879130; ALF=1728471130; _T_WM=35112945113; MLOGIN=1; XSRF-TOKEN=dbcb5c; mweibo_short_token=2b96126c6c; M_WEIBOCN_PARAMS=oid%3D5076707294580158%26luicode%3D20000061%26lfid%3D5076707294580158%26uicode%3D20000061%26fid%3D5076707294580158',
+        'mweibo-pwa': '1',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'referer': f'https://m.weibo.cn/detail/{id}',
+        'sec-ch-ua': '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+        'sec-ch-ua-mobile': '?1',
+        'sec-ch-ua-platform': '"Android"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest'
+    }
+
+    url = f"{base_url}?id={params['id']}"
+    logging.info("Fetching detail from URL: %s", url)
+    response = requests.get(url, headers=headers)
+    import time
+    time.sleep(1)
+    if response.status_code == 200:
+        logging.info("API call successful")
+        return response.json()
+    else:
+        logging.error("API call failed with status code: %s", response.status_code)
+        return None
+
 def crawl_weibo_comments(id):
     max_id = None
     while True:
