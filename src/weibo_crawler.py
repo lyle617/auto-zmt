@@ -132,7 +132,7 @@ def fetch_weibo_detail(id):
     time.sleep(1)
     if response.status_code == 200:
         logging.info("API call successful")
-        return response.json()
+        return response.json().get('data', {}).get('longTextContent', None)
     else:
         logging.error("API call failed with status code: %s", response.status_code)
         return None
