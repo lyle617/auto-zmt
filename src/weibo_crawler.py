@@ -11,8 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 import os
 
 SAVE_DIR = 'weibo_results'
-if not os.path.exists(SAVE_DIR):
-    os.makedirs(SAVE_DIR)
+
 def fetch_weibo_comments(id, max_id=None):
     base_url = 'https://m.weibo.cn/comments/hotflow'
     params = {
@@ -166,6 +165,8 @@ def crawl_weibo_comments(id):
 def crawl_weibo_detail(id):
     detail = fetch_weibo_detail(id)
     if detail:
+        if not os.path.exists(SAVE_DIR):
+            os.makedirs(SAVE_DIR)
         file_path = os.path.join(SAVE_DIR, f'weibo_detail_{id}.txt')
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(detail)
