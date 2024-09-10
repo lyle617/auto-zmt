@@ -77,6 +77,7 @@ def save_comments_to_csv(comments, file_path):
             writer.writeheader()
 
         new_comments = 0
+        duplicate_comments = 0
         for comment in comments:
             comment_id = comment.get('id', '')
             if comment_id not in existing_comments:
@@ -94,7 +95,10 @@ def save_comments_to_csv(comments, file_path):
                     'reply_to_text': reply_to_text
                 })
                 new_comments += 1
+            else:
+                duplicate_comments += 1
         logging.info("Saved %d new comments to %s", new_comments, file_path)
+        logging.info("Skipped %d duplicate comments", duplicate_comments)
 
 def crawl_weibo_comments(id):
     max_id = None
