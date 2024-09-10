@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the common comments directory
-COMMENTS_DIR = 'comments'
+SAVE_DIR = 'weibo_results'
 def fetch_weibo_comments(id, max_id=None):
     base_url = 'https://m.weibo.cn/comments/hotflow'
     params = {
@@ -154,7 +154,7 @@ def crawl_weibo_comments(id):
             break
 
         comments = response['data']['data']
-        save_comments_to_csv(comments, os.path.join(COMMENTS_DIR, f'weibo_comments_{id}.csv'))
+        save_comments_to_csv(comments, os.path.join(SAVE_DIR, f'weibo_comments_{id}.csv'))
 
         max_id = response['data'].get('max_id')
         if not max_id:
@@ -164,7 +164,7 @@ def crawl_weibo_comments(id):
 def crawl_weibo_detail(id):
     detail = fetch_weibo_detail(id)
     if detail:
-        file_path = os.path.join(COMMENTS_DIR, f'weibo_detail_{id}.txt')
+        file_path = os.path.join(SAVE_DIR, f'weibo_detail_{id}.txt')
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(detail)
         logging.info("Saved Weibo detail to %s", file_path)
@@ -173,5 +173,5 @@ def crawl_weibo_detail(id):
 
 if __name__ == "__main__":
     logging.info("Starting Weibo crawler")
-    crawl_weibo_comments('5076707294580158')
     crawl_weibo_detail('5076707294580158')
+    crawl_weibo_comments('5076707294580158')
