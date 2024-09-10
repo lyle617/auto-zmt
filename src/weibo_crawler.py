@@ -156,6 +156,17 @@ def crawl_weibo_comments(id):
             logging.info("Terminating due to no more max_id")
             break
 
+def crawl_weibo_detail(id):
+    detail = fetch_weibo_detail(id)
+    if detail:
+        file_path = os.path.join('comments', f'weibo_detail_{id}.txt')
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(detail)
+        logging.info("Saved Weibo detail to %s", file_path)
+    else:
+        logging.error("Failed to fetch Weibo detail for id: %s", id)
+
 if __name__ == "__main__":
-    logging.info("Starting Weibo comment crawler")
+    logging.info("Starting Weibo crawler")
     crawl_weibo_comments('5076707294580158')
+    crawl_weibo_detail('5076707294580158')
