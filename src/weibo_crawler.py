@@ -8,7 +8,11 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the common comments directory
+import os
+
 SAVE_DIR = 'weibo_results'
+if not os.path.exists(SAVE_DIR):
+    os.makedirs(SAVE_DIR)
 def fetch_weibo_comments(id, max_id=None):
     base_url = 'https://m.weibo.cn/comments/hotflow'
     params = {
@@ -61,8 +65,6 @@ def strip_html_tags(text):
     return re.sub(r'<.*?>', '', text)
 
 def save_comments_to_csv(comments, file_path):
-    if not os.path.exists('comments'):
-        os.makedirs('comments')
 
     existing_comments = set()
     if os.path.exists(file_path):
