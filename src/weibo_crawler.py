@@ -25,7 +25,7 @@ def fetch_weibo_comments(id, max_id=None):
         'mweibo-pwa': '1',
         'pragma': 'no-cache',
         'priority': 'u=1, i',
-        'referer': 'https://m.weibo.cn/detail/5076707294580158',
+        'referer': f'https://m.weibo.cn/detail/{id}',
         'sec-ch-ua': '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
