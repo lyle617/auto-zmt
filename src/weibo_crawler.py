@@ -51,7 +51,7 @@ class WeiboCrawler:
             url += f"&max_id={params['max_id']}"
         logging.info("Fetching comments from URL: %s", url)
         response = requests.get(url, headers=headers)
-        logging.info("Response: %s", response.text)
+        # logging.info("Response: %s", response.text)
         time.sleep(1)
         if response.status_code == 200:
             logging.info("API call successful")
@@ -149,10 +149,10 @@ class WeiboCrawler:
         while True:
             response = self.fetch_weibo_comments(id, max_id)
             if not response:
-                logging.info("Terminating due to empty response")
+                logging.info("Terminating due to empty response: {}", response)
                 break
             if not response.get('data', {}).get('data'):
-                logging.info("Terminating due to empty data in response")
+                logging.info("Terminating due to empty data in response: {}", response)
                 break
 
             comments = response['data']['data']
