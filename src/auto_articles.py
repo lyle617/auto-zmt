@@ -20,7 +20,29 @@ def generate_article_titles(weibo_id):
     # Save comments to CSV
     save_comments_to_csv(comments['data']['data'], os.path.join('weibo_results', f'weibo_comments_{weibo_id}.csv'))
 
-    # TODO: Implement the logic to generate 10 article titles based on the model's analysis
+    import os
+from openai import OpenAI
+
+client = OpenAI(api_key="<DeepSeek API Key>", base_url="https://api.deepseek.com")
+
+def generate_article_titles(analysis_file):
+    with open(analysis_file, 'r', encoding='utf-8') as file:
+        analysis_content = file.read()
+
+    messages = [{"role": "user", "content": f"Generate 10 article titles based on the following analysis:\n{analysis_content}"}]
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages
+    )
+
+    titles = [choice.message.content for choice in response.choices]
+    return titles
+
+# Example usage
+analysis_file = "model/analysis_result_20240910_001316.md"
+titles = generate_article_titles(analysis_file)
+for i, title in enumerate(titles, 1):
+    print(f"Title {i}: {title}")
     # For now, we will just return some placeholder titles
     titles = [
         f"Title 1 for Weibo ID {weibo_id}",
