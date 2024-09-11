@@ -165,7 +165,6 @@ class WeiboCrawler:
                 logging.info("Terminating due to no more max_id")
                 break
         return all_comments
-                break
 
     def crawl_weibo_detail(self, id):
         detail = self.fetch_weibo_detail(id)
