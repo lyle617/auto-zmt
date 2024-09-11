@@ -156,7 +156,8 @@ class WeiboCrawler:
                 break
 
             comments = response['data']['data']
-            all_comments.extend(comments)
+            filtered_comments = [{'likes': comment.get('like_count', 0), 'text': self.strip_html_tags(comment.get('text', ''))} for comment in comments]
+            all_comments.extend(filtered_comments)
             self.save_comments_to_csv(comments, os.path.join(self.SAVE_DIR, f'weibo_comments_{id}.csv'))
 
             max_id = response['data'].get('max_id')
