@@ -144,6 +144,7 @@ class WeiboCrawler:
             return None
 
     def crawl_weibo_comments(self, id):
+        all_comments = []
         max_id = None
         while True:
             response = self.fetch_weibo_comments(id, max_id)
@@ -155,13 +156,15 @@ class WeiboCrawler:
                 break
 
             comments = response['data']['data']
+            all_comments.extend(comments)
             self.save_comments_to_csv(comments, os.path.join(self.SAVE_DIR, f'weibo_comments_{id}.csv'))
-
 
             max_id = response['data'].get('max_id')
             logging.info("Next max_id: %s", max_id)
             if not max_id:
                 logging.info("Terminating due to no more max_id")
+                break
+        return all_comments
                 break
 
     def crawl_weibo_detail(self, id):
