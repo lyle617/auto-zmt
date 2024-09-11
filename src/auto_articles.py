@@ -20,7 +20,28 @@ def generate_article_titles(weibo_id):
     # Save comments to CSV
     save_comments_to_csv(comments['data']['data'], os.path.join('weibo_results', f'weibo_comments_{weibo_id}.csv'))
 
-    # TODO: Implement the logic to generate 10 article titles based on the model's analysis
+    import os
+import re
+from deepseek import Model
+
+def generate_article_titles(analysis_file):
+    """Generate 10 article titles based on the model's analysis."""
+    with open(analysis_file, 'r', encoding='utf-8') as file:
+        analysis_text = file.read()
+
+    # Initialize the deepseek model
+    model = Model()
+
+    # Generate titles based on the analysis
+    titles = model.generate_titles(analysis_text, num_titles=10)
+
+    return titles
+
+# Example usage
+analysis_file = os.path.join('model', 'analysis_result_20240910_001316.md')
+article_titles = generate_article_titles(analysis_file)
+for i, title in enumerate(article_titles, 1):
+    print(f"Title {i}: {title}")
     # For now, we will just return some placeholder titles
     titles = [
         f"Title 1 for Weibo ID {weibo_id}",
