@@ -8,3 +8,4 @@ output.txt
 .auto-coder/
 actions/
 output.txt
+src/__pycache__
