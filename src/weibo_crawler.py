@@ -182,8 +182,19 @@ class WeiboCrawler:
 def main():
     logging.info("Starting Weibo crawler")
     crawler = WeiboCrawler()
-    crawler.crawl_weibo_detail('5077429968700123')
-    crawler.crawl_weibo_comments('5077429968700123')
+    detail = crawler.crawl_weibo_detail('5077429968700123')
+    comments = crawler.crawl_weibo_comments('5077429968700123')
+    if detail:
+        print("Weibo Detail:")
+        print(detail)
+    else:
+        print("Failed to fetch Weibo detail.")
+    if comments:
+        print("Weibo Comments:")
+        for comment in comments:
+            print(comment)
+    else:
+        print("Failed to fetch Weibo comments.")
 
 if __name__ == "__main__":
     main()
