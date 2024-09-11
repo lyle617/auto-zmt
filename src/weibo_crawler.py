@@ -165,6 +165,7 @@ class WeiboCrawler:
             if not max_id:
                 logging.info("Terminating due to no more max_id")
                 break
+        all_comments.sort(key=lambda x: x['likes'], reverse=True)
         return all_comments
 
     def crawl_weibo_detail(self, id):
