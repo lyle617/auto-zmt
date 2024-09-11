@@ -171,8 +171,10 @@ class WeiboCrawler:
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(detail)
             logging.info("Saved Weibo detail to %s", file_path)
+            return detail
         else:
             logging.error("Failed to fetch Weibo detail for id: %s", id)
+            return None
 
 def main():
     logging.info("Starting Weibo crawler")
