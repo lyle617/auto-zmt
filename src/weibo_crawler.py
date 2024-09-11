@@ -3,6 +3,7 @@ import json
 import csv
 import os
 import logging
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
