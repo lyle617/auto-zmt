@@ -104,23 +104,6 @@ class WeiboCrawler:
             logging.info("Saved %d new comments to %s", new_comments, file_path)
             logging.info("Skipped %d duplicate comments", duplicate_comments)
 
-        # Save summary of comments with only text and likes fields
-        summary_file_path = os.path.join(self.SAVE_DIR, f'weibo_comments_summary_{id}.csv')
-        with open(summary_file_path, mode='a', newline='', encoding='utf-8') as summary_csv_file:
-            summary_fieldnames = ['text', 'likes']
-            summary_writer = csv.DictWriter(summary_csv_file, fieldnames=summary_fieldnames)
-
-            if summary_csv_file.tell() == 0:
-                summary_writer.writeheader()
-
-            for comment in comments:
-                cleaned_text = self.strip_html_tags(comment.get('text', ''))
-                summary_writer.writerow({
-                    'text': cleaned_text,
-                    'likes': comment.get('like_count', 0)
-                })
-            logging.info("Saved summary of %d comments to %s", len(comments), summary_file_path)
-
     def fetch_weibo_detail(self, id):
         base_url = 'https://m.weibo.cn/statuses/extend'
         params = {
