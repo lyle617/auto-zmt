@@ -20,8 +20,8 @@ def generate_article_titles(weibo_id, analysis_file, client):
     crawler = WeiboCrawler()
 
     # Fetch Weibo detail and comments
-    detail = crawler.fetch_weibo_detail(weibo_id)
-    comments = crawler.fetch_weibo_comments(weibo_id)
+    detail = crawler.crawl_weibo_detail(weibo_id)
+    comments = crawler.crawl_weibo_comments(weibo_id)
 
     if not detail or not comments:
         logging.error("Failed to fetch Weibo detail or comments for id: %s", weibo_id)
