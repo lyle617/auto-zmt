@@ -34,6 +34,7 @@ def generate_article_titles(weibo_id, analysis_file, client):
     # Read analysis content
     with open(analysis_file, 'r', encoding='utf-8') as file:
         analysis_content = file.read()
+    logging.info("Analysis content: %s", analysis_content)
 
     # Generate article titles
     messages = [
@@ -46,6 +47,7 @@ def generate_article_titles(weibo_id, analysis_file, client):
             "content": f"热搜详情:{detail}\n 热搜评论列表: {comments}\n 基于上述的热搜详情结合评论列表按照以下爆款文章的标题分析 {analysis_content} ，生成10个30字以内的文章标题"
         }
     ]
+    logging.info("Message content: %s", messages[1]['content'])
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=messages
