@@ -44,7 +44,7 @@ def generate_article_titles(weibo_id, analysis_file, client):
         },
         {
             "role": "user", 
-            "content": f"热搜详情:{detail} \\\n 热搜评论列表: {comments} \\\\n 下爆款文章的标题规律分析结果： {analysis_content}  \\\n 基于爆款文章的标题规律分析结果 为上述的热搜详情结合热搜评论列表生成10个30字以内的有吸引力的爆款文章标题，要求5个标题要带上网友评论观点"
+            "content": prompts.TOUTIAO_ARTICLE_TITLE_PROMPT.format(detail=detail, comments=comments, analysis_content=analysis_content)
         }
     ]
     logging.info("Message content: %s", messages)
