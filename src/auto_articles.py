@@ -2,7 +2,7 @@ import os
 import logging
 import os
 from openai import OpenAI # type: ignore
-from weibo_crawler import fetch_weibo_detail, fetch_weibo_comments, save_comments_to_csv
+from weibo_crawler import WeiboCrawler, save_comments_to_csv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,9 +15,11 @@ def generate_article_titles(weibo_id, analysis_file, client):
     """
     Generate 10 article titles based on the Weibo post and its comments.
     """
+    crawler = WeiboCrawler()
+
     # Fetch Weibo detail and comments
-    detail = fetch_weibo_detail(weibo_id)
-    comments = fetch_weibo_comments(weibo_id)
+    detail = crawler.fetch_weibo_detail(weibo_id)
+    comments = crawler.fetch_weibo_comments(weibo_id)
 
     if not detail or not comments:
         logging.error("Failed to fetch Weibo detail or comments for id: %s", weibo_id)
