@@ -1,6 +1,5 @@
 import logging
-import requests
-import json
+from openai import OpenAI # type: ignore
 import csv
 import os
 from datetime import datetime
@@ -11,43 +10,24 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def analyze_titles_with_deepseek(titles):
     logging.info("Starting deepseek_api_call function")
-    api_url = "https://api.deepseek.com/chat/completions"
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + os.getenv('DEEPSEEK_TOKEN')
-    }
-    payload = json.dumps({
-      "messages": [
+    client = OpenAI(api_key=os.getenv('DEEPSEEK_TOKEN'), base_url="https://api.deepseek.com")
+
+    messages = [
         {
-          "content": prompts.TOUTIAO_ROLE_PROMPT,
-          "role": "system"
+            "role": "system",
+            "content": prompts.TOUTIAO_ROLE_PROMPT
         },
         {
-          "content": f'{prompts.TOUTIAO_TITLE_ANALYSIS_PROMPT} {titles}',
-          "role": "user"
+            "role": "user", 
+            "content": f'{prompts.TOUTIAO_TITLE_ANALYSIS_PROMPT} {titles}'
         }
-      ],
-      "model": "deepseek-coder",
-      "frequency_penalty": 0,
-      "max_tokens": 2048,
-      "presence_penalty": 0,
-      "response_format": {
-        "type": "text"
-      },
-      "stop": None,
-      "stream": False,
-      "stream_options": None,
-      "temperature": 1,
-      "top_p": 1,
-      "tools": None,
-      "tool_choice": "none",
-      "logprobs": False,
-      "top_logprobs": None
-    })
+    ]
+    logging.info("Message content: %s", messages)
+    response = client.chat.completions.create(
+        model="deepseek-coder",
+        messages=messages
+    )
 
-    logging.info("Sending API request to %s", api_url)
-    response = requests.request("POST", api_url, headers=headers, data=payload)
     if response.status_code == 200:
         logging.info("API call successful")
         analysis_result = response.json()
