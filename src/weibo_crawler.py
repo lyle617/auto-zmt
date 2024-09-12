@@ -165,7 +165,8 @@ class WeiboCrawler:
                 logging.info("Terminating due to no more max_id")
                 break
         all_comments.sort(key=lambda x: x['likes'], reverse=True)
-        return all_comments
+        top_50_comments = all_comments[:50]
+        return top_50_comments
 
     def crawl_weibo_detail(self, id):
         detail = self.fetch_weibo_detail(id)
