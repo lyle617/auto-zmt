@@ -60,8 +60,8 @@ def generate_article_titles(weibo_id, analysis_file, client):
 
 if __name__ == "__main__":
     logging.info("Starting auto article generation")
-    weibo_id = '5076707294580158'
-    anlysis_file = './model/analysis_result_20240912_145206.md'
+    weibo_id = '5077393343776501'
+    anlysis_file = './model/analysis_result_20240912_191257.md'
     titles = generate_article_titles(weibo_id, anlysis_file, init_openai_client())
     for title in titles:
         logging.info("Generated title: %s", title)
