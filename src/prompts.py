@@ -20,4 +20,9 @@ TOUTIAO_TITLE_ANALYSIS_PROMPT = '''请分析以下爆款文章标题的特点和
 标题列表如下：
 '''
 
-TOUTIAO_ARTICLE_TITLE_PROMPT = '''热搜详情:{detail} \\\n 热搜评论列表: {comments} \\\\n 下爆款文章的标题规律分析结果： {analysis_content}  \\\n 基于爆款文章的标题规律分析结果 为上述的热搜详情结合热搜评论列表生成10个30字以内的有吸引力的爆款文章标题，要求5个标题要带上网友评论观点'''
+TOUTIAO_ARTICLE_TITLE_PROMPT = '''
+热搜详情:{detail} 
+热搜评论列表: {comments} 
+爆款文章的标题规律分析结果： {analysis_content}  
+基于爆款文章的标题规律分析结果为上述的热搜生成10个30字以内的有吸引力的爆款文章标题，要求5个标题要带上网友评论观点
+'''
