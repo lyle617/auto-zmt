@@ -10,7 +10,7 @@ import prompts
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def init_openai_client():
-    client = OpenAI(api_key="sk-c22ae6c9e1ef4e09b817758d2ce2dda1", base_url="https://api.deepseek.com")
+    client = OpenAI(api_key=os.getenv('DEEPSEEK_TOKEN'), base_url="https://api.deepseek.com")
     return client
 
 def generate_article_titles(weibo_id, analysis_file, client):
@@ -44,10 +44,10 @@ def generate_article_titles(weibo_id, analysis_file, client):
         },
         {
             "role": "user", 
-            "content": f"热搜详情:{detail}\n 热搜评论列表: {comments}\n 基于上述的热搜详情结合评论列表按照以下爆款文章的标题分析 {analysis_content} ，生成10个30字以内的文章标题"
+            "content": f"热搜详情:{detail} \\\n 热搜评论列表: {comments} \\\\n 下爆款文章的标题规律分析结果： {analysis_content}  \\\n 基于爆款文章的标题规律分析结果 为上述的热搜详情结合热搜评论列表生成10个30字以内的有吸引力的爆款文章标题，要求5个标题要带上网友评论观点"
         }
     ]
-    logging.info("Message content: %s", messages[1]['content'])
+    logging.info("Message content: %s", messages)
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=messages
@@ -61,7 +61,7 @@ def generate_article_titles(weibo_id, analysis_file, client):
 if __name__ == "__main__":
     logging.info("Starting auto article generation")
     weibo_id = '5076707294580158'
-    anlysis_file = 'model/analysis_result_20240910_001316.md'
+    anlysis_file = './model/analysis_result_20240912_145206.md'
     titles = generate_article_titles(weibo_id, anlysis_file, init_openai_client())
     for title in titles:
         logging.info("Generated title: %s", title)
