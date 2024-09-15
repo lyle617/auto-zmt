@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
 
     env:
-      CRAWLER_MAX_PAGES: 100
+      CRAWLER_MAX_PAGES: 50
       CRAWLER_COOKIE: ${{ secrets.CRAWLER_COOKIE }}
 
     steps:
