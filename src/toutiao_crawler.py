@@ -170,5 +170,30 @@ def process_response(response, timestamp):
             writer.writerow(row)
         logger.info(f"Wrote {len(deduplicated_articles)} articles to {top_articles_path}")
 
+def download_titles():
+    top_articles_path = os.path.join('articles', 'top_articles.csv')
+    if not os.path.exists(top_articles_path):
+        logger.error(f"File {top_articles_path} does not exist.")
+        return
+
+    with open(top_articles_path, mode='r', encoding='utf-8') as top_file:
+        reader = csv.DictReader(top_file)
+        for row in reader:
+            article_url = row.get('article_url', '')
+            title = row.get('title', '').replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
+            if not article_url or not title:
+                logger.warning(f"Skipping article with missing URL or title: {row}")
+                continue
+
+            try:
+                response = requests.get(article_url, timeout=10)
+                response.raise_for_status()
+                with open(os.path.join('articles', f'{title}.html'), 'wb') as file:
+                    file.write(response.content)
+                logger.info(f"Downloaded article: {title}")
+            except requests.RequestException as e:
+                logger.error(f"Failed to download article {title}: {e}")
+
 if __name__ == "__main__":
     articles_request()
+    download_titles()
