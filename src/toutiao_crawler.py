@@ -165,6 +165,10 @@ def process_response(response, timestamp):
     deduplicated_articles = [article for article in deduplicated_articles if article.get('has_video', '') != '1']
     deduplicated_articles = sorted(deduplicated_articles, key=lambda x: int(x['like_count']), reverse=True)[:500]
 
+    # Remove the 'has_video' field from each article
+    for article in deduplicated_articles:
+        article.pop('has_video', None)
+
     with open(top_articles_path, mode='w', newline='', encoding='utf-8') as top_file:
         fieldnames = ['title', 'publish_time', 'like_count', 'comment_count', 'media_name', 'source', 'abstract', 'article_url', 'tag', 'is_yaowen', 'article_sub_type']
         writer = csv.DictWriter(top_file, fieldnames=fieldnames)
