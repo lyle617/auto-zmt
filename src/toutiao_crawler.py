@@ -161,6 +161,8 @@ def process_response(response, timestamp):
             unique_titles.add(article['title'])
             deduplicated_articles.append(article)
 
+    # Filter out articles with has_video=1
+    deduplicated_articles = [article for article in deduplicated_articles if article.get('has_video', '') != '1']
     deduplicated_articles = sorted(deduplicated_articles, key=lambda x: int(x['like_count']), reverse=True)[:500]
 
     with open(top_articles_path, mode='w', newline='', encoding='utf-8') as top_file:
