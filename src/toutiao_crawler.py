@@ -191,6 +191,7 @@ def download_titles():
                 with open(os.path.join('articles', f'{title}.html'), 'wb') as file:
                     file.write(response.content)
                 logger.info(f"Downloaded article: {title}")
+                time.sleep(1)
             except requests.RequestException as e:
                 logger.error(f"Failed to download article {title}: {e}")
 
