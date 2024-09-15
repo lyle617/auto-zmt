@@ -188,9 +188,7 @@ def download_titles():
             try:
                 response = requests.get(article_url, timeout=10)
                 response.raise_for_status()
-                if not os.path.exists('articles/details'):
-                os.makedirs('articles/details')
-            with open(os.path.join('articles/details', f'{title}.html'), 'wb') as file:
+                with open(os.path.join('articles', f'{title}.html'), 'wb') as file:
                     file.write(response.content)
                 logger.info(f"Downloaded article: {title}")
                 time.sleep(1)
