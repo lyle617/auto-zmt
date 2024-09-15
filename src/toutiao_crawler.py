@@ -162,7 +162,7 @@ def process_response(response, timestamp):
             deduplicated_articles.append(article)
 
     # Filter out articles with has_video=1
-    deduplicated_articles = [article for article in deduplicated_articles if article.get('has_video', '') != '1']
+    deduplicated_articles = [article for article in deduplicated_articles if article.get('has_video', '') != 1]
     deduplicated_articles = sorted(deduplicated_articles, key=lambda x: int(x['like_count']), reverse=True)[:500]
 
     # Remove the 'has_video' field from each article
@@ -206,4 +206,4 @@ def download_titles():
 
 if __name__ == "__main__":
     articles_request()
-    download_titles()
+    # download_titles()
