@@ -99,9 +99,9 @@ def process_response(response, timestamp):
     if not data.get('data'):
         return
 
-    if not os.path.exists('articles'):
-        os.makedirs('articles')
-    csv_file_path = os.path.join('articles', f'extracted_data_{timestamp}.csv')
+    if not os.path.exists('articles/titles'):
+        os.makedirs('articles/titles')
+    csv_file_path = os.path.join('articles', 'titles', f'extracted_data_{timestamp}.csv')
     top_articles_path = os.path.join('articles', 'top_articles.csv')
     file_exists = os.path.isfile(csv_file_path)
 
