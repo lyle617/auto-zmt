@@ -73,12 +73,13 @@ def read_titles_from_csv(file_path):
     logging.info("Reading titles from CSV file: %s", file_path)
     titles = []
     dfa_filter = DFAFilter()
-    dfa_filter.parse('../text_filter/keywords')
+    dfa_filter.parse('src/keywords')
     with open(file_path, mode='r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             title = row['title']
             filtered_title = dfa_filter.filter(title)
+            logging.info("Original title: %s, Filtered title: %s", title, filtered_title)
             titles.append((int(row['like_count']), filtered_title))
     
     # Sort titles by like_count in descending order
