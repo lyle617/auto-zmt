@@ -5,9 +5,7 @@ import csv
 import os
 from datetime import datetime
 import prompts
-
-# List of sensitive words
-SENSITIVE_WORDS = ["敏感词1", "敏感词2", "敏感词3"]  # Replace with actual sensitive words
+from native_filter import DFAFilter
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -74,13 +72,14 @@ def analyze_titles_with_deepseek(titles):
 def read_titles_from_csv(file_path):
     logging.info("Reading titles from CSV file: %s", file_path)
     titles = []
+    dfa_filter = DFAFilter()
+    dfa_filter.parse('../text_filter/keywords')
     with open(file_path, mode='r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             title = row['title']
-            # Filter out titles containing sensitive words
-            if not any(word in title for word in SENSITIVE_WORDS):
-                titles.append((int(row['like_count']), title))
+            filtered_title = dfa_filter.filter(title)
+            titles.append((int(row['like_count']), filtered_title))
     
     # Sort titles by like_count in descending order
     titles.sort(reverse=True, key=lambda x: x[0])
@@ -88,7 +87,7 @@ def read_titles_from_csv(file_path):
     # Select the top 150 titles
     top_titles = [title for _, title in titles[:150]]
     
-    logging.info("Found %d titles with the highest like_count after filtering sensitive words", len(top_titles))
+    logging.info("Found %d titles with the highest like_count", len(top_titles))
     return top_titles
 
 if __name__ == "__main__":
