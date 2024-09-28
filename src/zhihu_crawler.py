@@ -29,7 +29,7 @@ class zhihuCrawler:
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
         }
 
-    def get_answers(self, question_id, order='updated', limit=20):
+    def get_answers(self, question_id, order='updated', limit=20, max_pages=3):
         url = f'{self.base_url}/questions/{question_id}/feeds'
         logging.info(f"Sending request to URL: {url}")
         params = {
@@ -42,7 +42,7 @@ class zhihuCrawler:
         is_end = False
         page = 0
 
-        while not is_end:
+        while not is_end and page < max_pages:
             logging.info(f"Fetching page {page + 1} for question ID: {question_id}")
             try:
                 response = requests.get(url, headers=self.headers, params=params)
