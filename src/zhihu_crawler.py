@@ -48,7 +48,7 @@ class zhihuCrawler:
                 response = requests.get(url, headers=self.headers, params=params)
                 response.raise_for_status()
                 data = response.json()
-                logging.info(f"Successfully fetched answers for question ID: {question_id}")
+                logging.info(f"Successfully fetched answers for question ID: {question_id}. Sleeping for {sleep_time:.2f} seconds.")
             except requests.RequestException as e:
                 logging.error(f"Failed to fetch answers for question ID: {question_id}. Error: {e}")
                 break
