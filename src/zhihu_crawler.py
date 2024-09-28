@@ -41,6 +41,7 @@ class zhihuCrawler:
         file_path = os.path.join(output_dir, f'{question_id}.csv')
         file_exists = os.path.exists(file_path)
         mode = 'w' if file_exists else 'x'
+        record_count = 0
         with open(file_path, mode=mode, newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(['Author ID', 'Author Nickname', 'Author Type', 'Author Headline', 'Likes Count', 'Thanks Count', 'Comment Count', 'Content'])
@@ -52,6 +53,8 @@ class zhihuCrawler:
                 logging.info(f"Writing answer to CSV: Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}, Comment Count: {target.get('comment_count')}, Content: {content}")
                 writer.writerow([author.get('id'), author.get('name'), author.get('type'), author.get('headline'), target.get('voteup_count'), target.get('thanks_count'), target.get('comment_count'), content])
                 logging.info(f"Successfully wrote answer to CSV: Author ID: {author.get('id')}")
+                record_count += 1
+        logging.info(f"Total records written to CSV: {record_count}")
 
     def get_answers(self, question_id, order='updated', limit=20, max_pages=3):
         url = f'{self.base_url}/questions/{question_id}/feeds'
