@@ -1,4 +1,6 @@
 
+import random
+import time
 import requests
 import json
 import os
@@ -55,7 +57,7 @@ class zhihuCrawler:
             is_end = data['paging']['is_end']
             url = data['paging']['next']
             page += 1
-            sleep_time = random.uniform(1, 2)  # Random sleep time between 1 and 2 seconds
+            sleep_time = random.uniform(1, 5)  # Random sleep time between 1 and 2 seconds
             time.sleep(sleep_time)  # Add a delay to avoid rate limiting
 
         return all_answers
@@ -65,4 +67,5 @@ if __name__ == "__main__":
     crawler = zhihuCrawler(cookie=cookie)
     answers = crawler.get_answers('668753879')
     if answers:
-        print(json.dumps(answers, indent=2, ensure_ascii=False))
+        for answer in answers:
+            print(json.dumps(answer, indent=2, ensure_ascii=False))
