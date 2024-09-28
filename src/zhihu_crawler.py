@@ -39,7 +39,9 @@ class zhihuCrawler:
             os.makedirs(output_dir)
 
         file_path = os.path.join(output_dir, f'{question_id}.csv')
-        with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+        file_exists = os.path.exists(file_path)
+        mode = 'w' if file_exists else 'x'
+        with open(file_path, mode=mode, newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(['Author ID', 'Author Nickname', 'Author Type', 'Author Headline', 'Likes Count', 'Thanks Count', 'Comment Count', 'Content'])
             for answer in answers:
