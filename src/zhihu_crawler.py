@@ -9,22 +9,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class zhihuCrawler:
     def __init__(self, cookie):
-        self.base_url = 'https://www.zhihu.com/api/v4/questions/'
+        self.base_url = 'https://www.zhihu.com/api/v4'
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Mobile Safari/537.36',
-            'Authorization': f'Bearer {os.getenv("ZHIHU_TOKEN")}',
-            'Cookie': cookie
-        }
-
-    def get_answers(self, question_id):
-        url = f'{self.base_url}{question_id}/feeds'
-        params = {
-            'include': 'data[*].is_normal,admin_closed_comment,reward_info,is_collapsed,annotation_action,annotation_detail,collapse_reason,is_sticky,collapsed_by,suggest_edit,comment_count,can_comment,content,editable_content,attachment,voteup_count,reshipment_settings,comment_permission,created_time,updated_time,review_info,relevant_info,question,excerpt,is_labeled,paid_info,paid_info_content,reaction_instruction,relationship.is_authorized,is_author,voting,is_thanked,is_nothelp;data[*].author.follower_count,vip_info,badge[*].topics;data[*].settings.table_of_content.enabled',
-            'order': 'updated',
-            'limit': 20
-        }
-
-        self.headers.update({
+            'Cookie': cookie,
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
             'priority': 'u=0, i',
@@ -37,7 +25,15 @@ class zhihuCrawler:
             'sec-fetch-user': '?1',
             'upgrade-insecure-requests': '1',
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
-        })
+        }
+
+    def get_answers(self, question_id):
+        url = f'{self.base_url}/questions/{question_id}/feeds'
+        params = {
+            'include': 'data[*].is_normal,admin_closed_comment,reward_info,is_collapsed,annotation_action,annotation_detail,collapse_reason,is_sticky,collapsed_by,suggest_edit,comment_count,can_comment,content,editable_content,attachment,voteup_count,reshipment_settings,comment_permission,created_time,updated_time,review_info,relevant_info,question,excerpt,is_labeled,paid_info,paid_info_content,reaction_instruction,relationship.is_authorized,is_author,voting,is_thanked,is_nothelp;data[*].author.follower_count,vip_info,badge[*].topics;data[*].settings.table_of_content.enabled',
+            'order': 'updated',
+            'limit': 20
+        }
 
         try:
             response = requests.get(url, headers=self.headers, params=params)
