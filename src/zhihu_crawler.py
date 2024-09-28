@@ -44,6 +44,8 @@ class zhihuCrawler:
 
         while not is_end and page < max_pages:
             logging.info(f"Fetching page {page + 1} for question ID: {question_id}")
+            sleep_time = random.uniform(1, 5)  # Random sleep time between 1 and 2 seconds
+            time.sleep(sleep_time)  # Add a delay to avoid rate limiting
             try:
                 response = requests.get(url, headers=self.headers, params=params)
                 response.raise_for_status()
@@ -57,8 +59,6 @@ class zhihuCrawler:
             is_end = data['paging']['is_end']
             url = data['paging']['next']
             page += 1
-            sleep_time = random.uniform(1, 5)  # Random sleep time between 1 and 2 seconds
-            time.sleep(sleep_time)  # Add a delay to avoid rate limiting
 
         return all_answers
 
