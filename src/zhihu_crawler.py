@@ -55,6 +55,10 @@ class zhihuCrawler:
                 logging.error(f"Failed to fetch answers for question ID: {question_id}. Error: {e}")
                 break
 
+            for answer in data.get('data', []):
+                author = answer.get('author', {})
+                logging.info(f"Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {answer.get('voteup_count')}, Thanks Count: {answer.get('thanks_count')}, Comment Count: {answer.get('comment_count')}")
+
             all_answers.extend(data.get('data', []))
             is_end = data['paging']['is_end']
             url = data['paging']['next']
