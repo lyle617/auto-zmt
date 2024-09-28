@@ -36,15 +36,28 @@ class zhihuCrawler:
             'limit': limit
         }
 
-        try:
-            response = requests.get(url, headers=self.headers, params=params)
-            response.raise_for_status()
-            data = response.json()
-            logging.info(f"Successfully fetched answers for question ID: {question_id}")
-            return data
-        except requests.RequestException as e:
-            logging.error(f"Failed to fetch answers for question ID: {question_id}. Error: {e}")
-            return None
+        all_answers = []
+        is_end = False
+        page = 0
+
+        while not is_end:
+            logging.info(f"Fetching page {page + 1} for question ID: {question_id}")
+            try:
+                response = requests.get(url, headers=self.headers, params=params)
+                response.raise_for_status()
+                data = response.json()
+                logging.info(f"Successfully fetched answers for question ID: {question_id}")
+            except requests.RequestException as e:
+                logging.error(f"Failed to fetch answers for question ID: {question_id}. Error: {e}")
+                break
+
+            all_answers.extend(data.get('data', []))
+            is_end = data['paging']['is_end']
+            url = data['paging']['next']
+            page += 1
+            time.sleep(1)  # Add a delay to avoid rate limiting
+
+        return all_answers
 
 if __name__ == "__main__":
     cookie = "_xsrf=y8SqpKJbgHYnf0fqO36v8ZrTNApYNFe9; _zap=1e1966a1-bd6b-4a18-ba2e-1b699074eb91; d_c0=ANAVibVE_xePTmSODk-7qa7b9DX_DnJn1hk=|1705047763; __snaker__id=QVQHFx5ySDwFekqR; q_c1=b85740d1757d4d74bf04e7e3f43cc5bc|1705369475000|1705369475000; q_c1=b85740d1757d4d74bf04e7e3f43cc5bc|1725965099000|1705369475000; HMACCOUNT=5C1E600B38DAB84E; z_c0=2|1:0|10:1727350649|4:z_c0|80:MS4xaHZTYUF3QUFBQUFtQUFBQVlBSlZUWDl2eldkOHpzdWgydHFkNE9vQ1pXaV8wV0dtQnUwVS1BPT0=|9916518dffc53e9b4f43ce13c2f34cd282e2e8d76137b0bc084fe5f5f667f15c; tst=h; SESSIONID=u5bnXP5jYBDxg6M87bbcoAFa1LQYckDPETuR5GuS7JG; JOID=Vl0cAEkiE3QcQRUOcCVUq-IllRxkVioccx9ENxB9UDxuJyVCRN2BiX1GGAh70M_pSHjo9V8bH2se48rr8FJ00e4=; osd=V1gVAUojFn0dQhQLeSRXqucslB9lUyMdcB5BPhF-UTlnJiZDQdSAinxDEQl40crgSXvp8FYaHGob6svo8Vd90O0=; Hm_lvt_98beee57fd2ef70ccdd5ca52b9740c49=1727349902; __zse_ck=003_bvEOmZWPtbsKPCsKp+qHe4OROj4vqRu4La/2w9mSga6PJmJtJC74yxShaUy9uWwZ7TPk9HvzYop47b7Qx7TuqMHOwwGM+QqRT6CN58JUsKe2; Hm_lpvt_98beee57fd2ef70ccdd5ca52b9740c49=1727436021; BEC=6ff32b60f55255af78892ba1e551063a"
