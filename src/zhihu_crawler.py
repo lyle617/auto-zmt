@@ -69,37 +69,6 @@ class zhihuCrawler:
             url = data['paging']['next']
             page += 1
 
-        import csv
-        import os
-
-        # Create the directory if it doesn't exist
-        result_dir = 'zhihu_result'
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-
-        csv_file_path = os.path.join(result_dir, f'{question_id}.csv')
-        with open(csv_file_path, mode='w', newline='', encoding='utf-8') as csv_file:
-            fieldnames = ['answer_id', 'author_id', 'author_name', 'author_type', 'author_headline', 'voteup_count', 'thanks_count', 'comment_count', 'content']
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-            writer.writeheader()
-
-            for answer in all_answers:
-                target = answer.get('target', {})
-                author = target.get('author', {})
-                content = re.sub('<.*?>', '', target.get('content', ''))
-                writer.writerow({
-                    'answer_id': target.get('id'),
-                    'author_id': author.get('id'),
-                    'author_name': author.get('name'),
-                    'author_type': author.get('type'),
-                    'author_headline': author.get('headline'),
-                    'voteup_count': target.get('voteup_count'),
-                    'thanks_count': target.get('thanks_count'),
-                    'comment_count': target.get('comment_count'),
-                    'content': content
-                })
-
-        logging.info(f"Saved {len(all_answers)} answers to {csv_file_path}")
         return all_answers
 
 if __name__ == "__main__":
