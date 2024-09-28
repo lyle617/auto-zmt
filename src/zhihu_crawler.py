@@ -27,12 +27,12 @@ class zhihuCrawler:
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
         }
 
-    def get_answers(self, question_id):
+    def get_answers(self, question_id, order='updated', limit=20):
         url = f'{self.base_url}/questions/{question_id}/feeds'
         params = {
             'include': 'data[*].is_normal,admin_closed_comment,reward_info,is_collapsed,annotation_action,annotation_detail,collapse_reason,is_sticky,collapsed_by,suggest_edit,comment_count,can_comment,content,editable_content,attachment,voteup_count,reshipment_settings,comment_permission,created_time,updated_time,review_info,relevant_info,question,excerpt,is_labeled,paid_info,paid_info_content,reaction_instruction,relationship.is_authorized,is_author,voting,is_thanked,is_nothelp;data[*].author.follower_count,vip_info,badge[*].topics;data[*].settings.table_of_content.enabled',
-            'order': 'updated',
-            'limit': 20
+            'order': order,
+            'limit': limit
         }
 
         try:
