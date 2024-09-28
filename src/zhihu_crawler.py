@@ -55,7 +55,8 @@ class zhihuCrawler:
             is_end = data['paging']['is_end']
             url = data['paging']['next']
             page += 1
-            time.sleep(1)  # Add a delay to avoid rate limiting
+            sleep_time = random.uniform(1, 2)  # Random sleep time between 1 and 2 seconds
+            time.sleep(sleep_time)  # Add a delay to avoid rate limiting
 
         return all_answers
 
