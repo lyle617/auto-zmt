@@ -184,7 +184,7 @@ class toutiaoCrawler:
         # Process unique data
         self.process_response(response={'data': unique_data}, timestamp=timestamp)       
 
-    def download_titles(self):
+    def download_titles(self, max_downloads=10):
         top_articles_path = os.path.join('articles', 'top_articles.csv')
         if not os.path.exists(top_articles_path):
             logger.error(f"File {top_articles_path} does not exist.")
@@ -197,7 +197,10 @@ class toutiaoCrawler:
         try:
             with open(top_articles_path, mode='r', encoding='utf-8') as top_file:
                 reader = csv.DictReader(top_file)
+                download_count = 0
                 for row in reader:
+                    if download_count >= max_downloads:
+                        break
                     article_url = row.get('article_url', '')
                     title = row.get('title', '').replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
                     if not article_url or not title:
@@ -215,13 +218,20 @@ class toutiaoCrawler:
                         with open(os.path.join('articles/details', f'{title}.html'), 'w', encoding='utf-8') as file:
                             file.write(articleHtml)
                             logger.info(f"Downloaded article: {title}")
-                            time.sleep(1)
+
+                        # Convert HTML to PDF
+                        pdf_output_path = os.path.join('articles/details', f'{title}.pdf')
+                        pypandoc.convert_text(articleHtml, 'pdf', format='html', outputfile=pdf_output_path)
+                        logger.info(f"Converted article to PDF: {title}")
+
+                        time.sleep(1)
+                        download_count += 1
                     except Exception as e:
-                        logger.error(f"Failed to download article {title}: {e}")
+                        logger.error(f"Failed to download or convert article {title}: {e}")
         finally:
             browser.quit()
 
 if __name__ == "__main__":
     toutiaoCrawler = toutiaoCrawler()
     toutiaoCrawler.articles_request()
-    # download_titles()
+    toutiaoCrawler.download_titles(max_downloads=5)
