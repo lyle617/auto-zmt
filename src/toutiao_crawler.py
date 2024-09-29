@@ -11,6 +11,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Add a logger
 logger = logging.getLogger(__name__)
+
+class toutiaoCrawler:
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 def articles_request():
     base_url = 'https://m.toutiao.com/list/'
     params = {
