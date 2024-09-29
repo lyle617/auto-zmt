@@ -45,18 +45,20 @@ class zhihuCrawler:
         with open(file_path, mode=mode, newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(['Author ID', 'Author Nickname', 'Author Type', 'Author Headline', 'Likes Count', 'Thanks Count', 'Comment Count', 'Content'])
-            for answer in answers:
+            # Sort answers by voteup_count in descending order
+            sorted_answers = sorted(answers, key=lambda x: x.get('target', {}).get('voteup_count', 0), reverse=True)
+            for answer in sorted_answers:
                 target = answer.get('target', {})
                 author = target.get('author', {})
                 content = target.get('content', '')
                 content = re.sub('<.*?>', '', content)
-                logging.info(f"Writing answer to CSV: Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}, Comment Count: {target.get('comment_count')}, Content: {content}")
+                # logging.info(f"Writing answer to CSV: Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}, Comment Count: {target.get('comment_count')}, Content: {content}")
                 writer.writerow([author.get('id'), author.get('name'), author.get('type'), author.get('headline'), target.get('voteup_count'), target.get('thanks_count'), target.get('comment_count'), content])
-                logging.info(f"Successfully wrote answer to CSV: Author ID: {author.get('id')}")
+                # logging.info(f"Successfully wrote answer to CSV: Author ID: {author.get('id')}")
                 record_count += 1
         logging.info(f"Total records written to CSV: {record_count}")
 
-    def get_answers(self, question_id, order='updated', limit=20, max_pages=3):
+    def get_answers(self, question_id, order='voteup_count', limit=20, max_pages=3):
         url = f'{self.base_url}/questions/{question_id}/feeds'
         logging.info(f"Sending request to URL: {url}")
         params = {
@@ -87,8 +89,8 @@ class zhihuCrawler:
                 author = target.get('author', {})
                 content = target.get('content', {})
                 content = re.sub('<.*?>', '', content)
-                # logging.info(f"answer: {json.dumps(answer, indent=2, ensure_ascii=False)}") 
-                logging.info(f"Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}, Comment Count: {target.get('comment_count')}, Content: {content}")
+                logging.info(f"answer: {json.dumps(answer, indent=2, ensure_ascii=False)}") 
+                # logging.info(f"Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}")
 
             all_answers.extend(data.get('data', []))
             is_end = data['paging']['is_end']
@@ -113,5 +115,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     crawler = zhihuCrawler(cookie=cookie)
-    answers = crawler.get_answers(question_id=args.question_id, max_pages=args.max_pages)
+    answers = crawler.get_answers(question_id=args.question_id, max_pages=args.max_pages, order='voteup_count')
     crawler.save_answers(answers, args.question_id)
