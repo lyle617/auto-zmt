@@ -164,7 +164,7 @@ class toutiaoCrawler:
                 logger.info("No more data to process")
                 break    
 
-            filtered_data = [item for item in data['data'] if item.get('source', '') != '央视网']
+            filtered_data = [item for item in data['data'] if item.get('source', '') not in ['央视网', '新华社']]
             all_data.extend(filtered_data)    
 
             behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
