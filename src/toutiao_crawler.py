@@ -2,11 +2,14 @@ import datetime
 import json
 import csv
 import os
+import random
 import time
 import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+import pypandoc
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -208,6 +211,7 @@ class toutiaoCrawler:
                         continue    
 
                     try:
+                        logger.info(f"Downloaded article: {title}, url: {article_url}")
                         browser.get(article_url)
                         time.sleep(10)
                         textContainer = browser.find_element(By.CLASS_NAME, "syl-article-base")
@@ -217,14 +221,13 @@ class toutiaoCrawler:
                             os.makedirs('articles/details')
                         with open(os.path.join('articles/details', f'{title}.html'), 'w', encoding='utf-8') as file:
                             file.write(articleHtml)
-                            logger.info(f"Downloaded article: {title}")
+                            logger.info(f"Downloaded article: {title} success, url: {article_url}")
 
-                        # Convert HTML to PDF
-                        pdf_output_path = os.path.join('articles/details', f'{title}.pdf')
-                        pypandoc.convert_text(articleHtml, 'pdf', format='html', outputfile=pdf_output_path)
-                        logger.info(f"Converted article to PDF: {title}")
-
-                        time.sleep(1)
+                        # Convert HTML to docx
+                        pdf_output_path = os.path.join('articles/details', f'{title}.docx')
+                        pypandoc.convert_text(articleHtml, 'docx', format='html', outputfile=pdf_output_path)
+                        logger.info(f"Converted article to docx: {title}")
+                        time.sleep(random.randint(1, 5))
                         download_count += 1
                     except Exception as e:
                         logger.error(f"Failed to download or convert article {title}: {e}")
@@ -234,4 +237,4 @@ class toutiaoCrawler:
 if __name__ == "__main__":
     toutiaoCrawler = toutiaoCrawler()
     toutiaoCrawler.articles_request()
-    toutiaoCrawler.download_titles(max_downloads=5)
+    # toutiaoCrawler.download_titles(max_downloads=5)
