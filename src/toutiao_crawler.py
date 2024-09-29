@@ -223,16 +223,21 @@ class toutiaoCrawler:
 
                         if not os.path.exists('articles/details'):
                             os.makedirs('articles/details')
-                        with open(os.path.join('articles/details', f'{title}.html'), 'w', encoding='utf-8') as file:
-                            file.write(articleHtml)
-                            logger.info(f"Downloaded article: {title} success, url: {article_url}")
+                        html_output_path = os.path.join('articles/details', f'{title}.html')
+                        docx_output_path = os.path.join('articles/details', f'{title}.docx')
 
-                        # Convert HTML to docx
-                        pdf_output_path = os.path.join('articles/details', f'{title}.docx')
-                        pypandoc.convert_text(articleHtml, 'docx', format='html', outputfile=pdf_output_path)
-                        logger.info(f"Converted article to docx: {title}")
-                        time.sleep(random.randint(1, 5))
-                        download_count += 1
+                        if not os.path.exists(html_output_path) and not os.path.exists(docx_output_path):
+                            with open(html_output_path, 'w', encoding='utf-8') as file:
+                                file.write(articleHtml)
+                                logger.info(f"Downloaded article: {title} success, url: {article_url}")
+
+                            # Convert HTML to docx
+                            pypandoc.convert_text(articleHtml, 'docx', format='html', outputfile=docx_output_path)
+                            logger.info(f"Converted article to docx: {title}")
+                            time.sleep(random.randint(1, 5))
+                            download_count += 1
+                        else:
+                            logger.info(f"Article {title} already exists, skipping download.")
                     except Exception as e:
                         logger.error(f"Failed to download or convert article {title}: {e}")
         finally:
