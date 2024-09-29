@@ -16,7 +16,7 @@ class toutiaoCrawler:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-def articles_request():
+    def articles_request(self):
     base_url = 'https://m.toutiao.com/list/'
     params = {
         'tag': '__all__',
