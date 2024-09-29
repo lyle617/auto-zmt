@@ -17,6 +17,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Add a logger
 logger = logging.getLogger(__name__)
 
+filter_sources = ['央视网', '新华社']
+
 class toutiaoCrawler:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -164,7 +166,7 @@ class toutiaoCrawler:
                 logger.info("No more data to process")
                 break    
 
-            filtered_data = [item for item in data['data'] if item.get('source', '') not in ['央视网', '新华社']]
+            filtered_data = [item for item in data['data'] if item.get('source', '') not in filter_sources]
             all_data.extend(filtered_data)    
 
             behot_times = [item.get('behot_time', float('inf')) for item in data.get('data', [])]
