@@ -1,10 +1,12 @@
 import datetime
-import requests
 import json
 import csv
 import os
 import time
 import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -188,26 +190,36 @@ class toutiaoCrawler:
             logger.error(f"File {top_articles_path} does not exist.")
             return    
 
-        with open(top_articles_path, mode='r', encoding='utf-8') as top_file:
-            reader = csv.DictReader(top_file)
-            for row in reader:
-                article_url = row.get('article_url', '')
-                title = row.get('title', '').replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
-                if not article_url or not title:
-                    logger.warning(f"Skipping article with missing URL or title: {row}")
-                    continue    
+        driver_path = "./chromedriver-mac-arm64/chromedriver"
+        service = Service(driver_path)
+        browser = webdriver.Chrome(service=service)
 
-                try:
-                    response = requests.get(article_url, timeout=10)
-                    response.raise_for_status()
-                    if not os.path.exists('articles/details'):
-                        os.makedirs('articles/details')
-                    with open(os.path.join('articles/details', f'{title}.html'), 'wb') as file:
-                        file.write(response.content)
-                        logger.info(f"Downloaded article: {title}")
-                        time.sleep(1)
-                except requests.RequestException as e:
-                    logger.error(f"Failed to download article {title}: {e}")
+        try:
+            with open(top_articles_path, mode='r', encoding='utf-8') as top_file:
+                reader = csv.DictReader(top_file)
+                for row in reader:
+                    article_url = row.get('article_url', '')
+                    title = row.get('title', '').replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
+                    if not article_url or not title:
+                        logger.warning(f"Skipping article with missing URL or title: {row}")
+                        continue    
+
+                    try:
+                        browser.get(article_url)
+                        time.sleep(10)
+                        textContainer = browser.find_element(By.CLASS_NAME, "syl-article-base")
+                        articleHtml = textContainer.get_attribute("innerHTML")
+
+                        if not os.path.exists('articles/details'):
+                            os.makedirs('articles/details')
+                        with open(os.path.join('articles/details', f'{title}.html'), 'w', encoding='utf-8') as file:
+                            file.write(articleHtml)
+                            logger.info(f"Downloaded article: {title}")
+                            time.sleep(1)
+                    except Exception as e:
+                        logger.error(f"Failed to download article {title}: {e}")
+        finally:
+            browser.quit()
 
 if __name__ == "__main__":
     toutiaoCrawler = toutiaoCrawler()
