@@ -214,6 +214,11 @@ class toutiaoCrawler:
                         logger.warning(f"Skipping article with missing URL or title: {row}")
                         continue    
 
+                    # Check if the URL is from toutiao.com
+                    if not article_url.startswith('https://toutiao.com'):
+                        logger.warning(f"Skipping article with non-toutiao.com URL: {article_url}")
+                        continue    
+
                     try:
                         logger.info(f"Downloaded article: {title}, url: {article_url}")
                         browser.get(article_url)
