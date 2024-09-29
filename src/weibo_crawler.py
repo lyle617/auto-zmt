@@ -1,3 +1,4 @@
+import sys
 import requests
 import csv
 import os
@@ -181,10 +182,15 @@ class WeiboCrawler:
             return None
 
 def main():
-    logging.info("Starting Weibo crawler")
+    if len(sys.argv) != 2:
+        print("Usage: python weibo_crawler.py <id>")
+        sys.exit(1)
+
+    id = sys.argv[1]
+    logging.info("Starting Weibo crawler with id: %s", id)
     crawler = WeiboCrawler()
-    detail = crawler.crawl_weibo_detail('5077429968700123')
-    comments = crawler.crawl_weibo_comments('5077429968700123')
+    detail = crawler.crawl_weibo_detail(id)
+    comments = crawler.crawl_weibo_comments(id)
     if detail:
         print("Weibo Detail:")
         print(detail)
