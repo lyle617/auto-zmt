@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     logging.info("Starting auto article generation")
     weibo_id = args.weibo_id
-    anlysis_file = f'./analysis_result/analysis_result_{args.question_id}.md'
+    anlysis_file = f'./analysis_result/title_analysis_result.md'
 
     # Fetch Weibo detail and comments
     crawler = WeiboCrawler()
