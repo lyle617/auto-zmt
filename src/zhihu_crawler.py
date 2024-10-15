@@ -6,6 +6,9 @@ import json
 import os
 import logging
 import re
+import os
+import sys
+import argparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -98,10 +101,6 @@ class zhihuCrawler:
             page += 1
 
         return all_answers
-
-import os
-import sys
-import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Zhihu Crawler")

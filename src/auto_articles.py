@@ -115,4 +115,4 @@ if __name__ == "__main__":
     weibo_id = args.weibo_id
     analysis_file = f'./analysis_result/title_analysis_result.md'
 
-    process_weibo_post(weibo_id, analysis_file)
+    title, detail, comments = process_weibo_post(weibo_id, analysis_file)
