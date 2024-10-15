@@ -12,15 +12,41 @@ def init_openai_client():
     client = OpenAI(api_key=os.getenv('DEEPSEEK_TOKEN'), base_url="https://api.deepseek.com")
     return client
 
-def generate_article_titles_and_log(weibo_id, analysis_file, detail, comments, client):
+def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
     """
-    Generate 10 article titles based on the Weibo post and its comments, and log the results.
+    Generate 10 article titles based on the Weibo post and its comments.
     """
-    titles = generate_article_titles(weibo_id, analysis_file, detail, comments, client)
-    for title in titles:
-        logging.info("Generated title: \n%s", title)
-        logging.info("=====================================")
-        logging.info("Detail content: \n%s", detail)
+    # Log the fetched Weibo detail and comments list
+    logging.info("Fetched Weibo detail: %s", detail)
+    logging.info("Fetched Weibo comments list: %s", comments)
+
+    if not detail or not comments:
+        logging.error("Failed to fetch Weibo detail or comments for id: %s", weibo_id)
+        return []
+
+    # Read analysis content
+    with open(analysis_file, 'r', encoding='utf-8') as file:
+        analysis_content = file.read()
+    logging.info("Analysis content: %s", analysis_content)
+
+    # Generate article titles
+    messages = [
+        {
+            "role": "system",
+            "content": prompts.TOUTIAO_ROLE_PROMPT
+        },
+        {
+            "role": "user", 
+            "content": prompts.TOUTIAO_ARTICLE_TITLE_PROMPT.format(detail=detail, comments=comments, analysis_content=analysis_content)
+        }
+    ]
+    logging.info("Message content: %s", messages)
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages
+    )
+
+    titles = [choice.message.content for choice in response.choices]
     return titles
     
 
@@ -40,4 +66,8 @@ if __name__ == "__main__":
     detail = crawler.crawl_weibo_detail(weibo_id)
     comments = crawler.crawl_weibo_comments(weibo_id)
 
-    titles = generate_article_titles_and_log(weibo_id, anlysis_file, detail, comments, init_openai_client())
+    titles = generate_article_titles(weibo_id, anlysis_file, detail, comments, init_openai_client())
+    for title in titles:
+        logging.info("Generated title: \n%s", title)
+        logging.info("=====================================")
+        logging.info("Detail content: \n%s", detail)
