@@ -46,7 +46,7 @@ def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
         messages=messages
     )
 
-    titles = [choice.message.content for choice in response.choices]
+    titles = [{"title": choice.message.content, "comment": comments[i % len(comments)]} for i, choice in enumerate(response.choices)]
     return titles
     
 
