@@ -59,24 +59,28 @@ def process_weibo_post(weibo_id, analysis_file):
     detail = crawler.crawl_weibo_detail(weibo_id)
     comments = crawler.crawl_weibo_comments(weibo_id)
 
-    titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
-    if not titles:
-        logging.error("No titles generated for Weibo ID: %s", weibo_id)
-        return
+    while True:
+        titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
+        if not titles:
+            logging.error("No titles generated for Weibo ID: %s", weibo_id)
+            return
 
-    logging.info("Generated titles:")
-    for i, title in enumerate(titles, 1):
-        logging.info("%d. %s", i, title)
+        logging.info("Generated titles:")
+        for i, title in enumerate(titles, 1):
+            logging.info("%d. %s", i, title)
 
-    selected_index = int(input("Please select a title by entering its number: ")) - 1
-    if 0 <= selected_index < len(titles):
-        selected_title = titles[selected_index]
-        logging.info("Selected title: \n%s", selected_title)
-        logging.info("=====================================")
-        logging.info("Detail content: \n%s", detail)
-        return selected_title, detail, comments
-    else:
-        logging.error("Invalid selection. No title selected.")
+        selected_index = int(input("Please select a title by entering its number (or enter 0 to regenerate titles): ")) - 1
+        if selected_index == -1:
+            logging.info("Regenerating titles...")
+            continue
+        elif 0 <= selected_index < len(titles):
+            selected_title = titles[selected_index]
+            logging.info("Selected title: \n%s", selected_title)
+            logging.info("=====================================")
+            logging.info("Detail content: \n%s", detail)
+            return selected_title, detail, comments
+        else:
+            logging.error("Invalid selection. Please try again.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate article titles based on Weibo post and its comments.")
