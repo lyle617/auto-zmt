@@ -60,6 +60,7 @@ class zhihuCrawler:
                 # logging.info(f"Successfully wrote answer to CSV: Author ID: {author.get('id')}")
                 record_count += 1
         logging.info(f"Total records written to CSV: {record_count}")
+        return file_path
 
     def get_answers(self, question_id, order='voteup_count', limit=20, max_pages=3):
         url = f'{self.base_url}/questions/{question_id}/feeds'
@@ -110,7 +111,8 @@ def run_crawler(question_id, max_pages=3):
 
     crawler = zhihuCrawler(cookie=cookie)
     answers = crawler.get_answers(question_id=question_id, max_pages=max_pages, order='voteup_count')
-    crawler.save_answers(answers, question_id)
+    file_path = crawler.save_answers(answers, question_id)
+    return file_path
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Zhihu Crawler")
