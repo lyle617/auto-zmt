@@ -116,3 +116,8 @@ if __name__ == "__main__":
     analysis_file = f'./analysis_result/title_analysis_result.md'
 
     title, detail, comments = process_weibo_post(weibo_id, analysis_file)
+
+    if args.question_id:
+        from zhihu_crawler import run_crawler
+        logging.info("Starting Zhihu crawler for question ID: %s", args.question_id)
+        run_crawler(args.question_id)
