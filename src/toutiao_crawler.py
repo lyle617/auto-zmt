@@ -250,5 +250,5 @@ class toutiaoCrawler:
 
 if __name__ == "__main__":
     toutiaoCrawler = toutiaoCrawler()
-    # toutiaoCrawler.articles_request()
-    toutiaoCrawler.download_titles(max_downloads=20)
+    toutiaoCrawler.articles_request()
+    # toutiaoCrawler.download_titles(max_downloads=20)

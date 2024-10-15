@@ -4,6 +4,8 @@ import argparse
 from openai import OpenAI # type: ignore
 from weibo_crawler import WeiboCrawler
 import prompts
+from zhihu_crawler import run_crawler
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -117,7 +119,7 @@ if __name__ == "__main__":
 
     title, detail, comments = process_weibo_post(weibo_id, analysis_file)
 
-    if args.question_id:
-        from zhihu_crawler import run_crawler
-        logging.info("Starting Zhihu crawler for question ID: %s", args.question_id)
-        run_crawler(args.question_id)
+    logging.info("Starting Zhihu crawler for question ID: %s", args.question_id)
+    answers = run_crawler(args.question_id)
+
+    # todo: based on the selected title, detail, comments, and answers, generate an article
