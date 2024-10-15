@@ -74,13 +74,14 @@ def process_weibo_post(weibo_id, analysis_file):
         logging.info("Selected title: \n%s", selected_title)
         logging.info("=====================================")
         logging.info("Detail content: \n%s", detail)
+        return selected_title, detail, comments
     else:
         logging.error("Invalid selection. No title selected.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate article titles based on Weibo post and its comments.")
-    parser.add_argument('weibo_id', type=str, help='Weibo ID to fetch details and comments')
-    parser.add_argument('question_id', type=str, help='Question ID for analysis')
+    parser.add_argument('--weibo_id', type=str, help='Weibo ID to fetch details and comments')
+    parser.add_argument('--question_id', type=str, help='Question ID for analysis')
     args = parser.parse_args()
 
     logging.info("Starting auto article generation")
