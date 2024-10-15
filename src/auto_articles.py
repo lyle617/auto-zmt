@@ -70,6 +70,7 @@ def process_weibo_post(weibo_id, analysis_file):
 
     while True:
         selected_index = int(input("Please select a title by entering its number (or enter 0 to regenerate titles): ")) - 1
+        logging.info("Selected index: %d", selected_index)
         if selected_index == -1:
             logging.info("Regenerating titles...")
             titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
