@@ -60,10 +60,22 @@ def process_weibo_post(weibo_id, analysis_file):
     comments = crawler.crawl_weibo_comments(weibo_id)
 
     titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
-    for title in titles:
-        logging.info("Generated title: \n%s", title)
+    if not titles:
+        logging.error("No titles generated for Weibo ID: %s", weibo_id)
+        return
+
+    logging.info("Generated titles:")
+    for i, title in enumerate(titles, 1):
+        logging.info("%d. %s", i, title)
+
+    selected_index = int(input("Please select a title by entering its number: ")) - 1
+    if 0 <= selected_index < len(titles):
+        selected_title = titles[selected_index]
+        logging.info("Selected title: \n%s", selected_title)
         logging.info("=====================================")
         logging.info("Detail content: \n%s", detail)
+    else:
+        logging.error("Invalid selection. No title selected.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate article titles based on Weibo post and its comments.")
