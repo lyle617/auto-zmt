@@ -28,7 +28,7 @@ TOUTIAO_ARTICLE_TITLE_PROMPT = '''
 要求如下： 
   1. 其中5个标题要带上网友评论观点, 优先选择点赞数(likes)多的评论 
   2. 字数不超过30字
-  3. 以json数组的格式返回生成的标题列表
+  3. 以json数组的格式返回生成的标题列表，不需要代码格式化
 '''
 
 TOUTIAO_ARTICLE_CONTENT_PROMPT = '''
