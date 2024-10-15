@@ -95,6 +95,10 @@ def process_weibo_post(weibo_id, analysis_file):
         elif 0 <= selected_index < len(titles):
             selected_title = titles[selected_index]
             logging.info("Selected title: \n%s", selected_title)
+            new_title = input("Enter a new title (leave blank to use the selected title): ").strip()
+            if new_title:
+                selected_title["title"] = new_title
+            logging.info("Final title: \n%s", selected_title["title"])
             logging.info("=====================================")
             logging.info("Detail content: \n%s", detail)
             return selected_title, detail, comments
