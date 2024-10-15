@@ -60,12 +60,11 @@ def process_weibo_post(weibo_id, analysis_file):
     comments = crawler.crawl_weibo_comments(weibo_id)
 
     titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
-    logging.info("Length of generated titles: %d", len(titles))
     if not titles:
         logging.error("No titles generated for Weibo ID: %s", weibo_id)
         return
 
-    logging.info("Generated titles:")
+    logging.info("Generated %d titles:", len(titles))
     for i, title in enumerate(titles, 1):
         logging.info("%d. %s", i, title)
 
