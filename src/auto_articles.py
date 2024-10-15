@@ -1,10 +1,9 @@
 import os
 import logging
-import os
+import argparse
 from openai import OpenAI # type: ignore
 from weibo_crawler import WeiboCrawler
 import prompts
-
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -53,9 +52,14 @@ def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate article titles based on Weibo post and its comments.")
+    parser.add_argument('weibo_id', type=str, help='Weibo ID to fetch details and comments')
+    parser.add_argument('question_id', type=str, help='Question ID for analysis')
+    args = parser.parse_args()
+
     logging.info("Starting auto article generation")
-    weibo_id = '5084585620673148'
-    anlysis_file = './analysis_result/analysis_result_20240912_191257.md'
+    weibo_id = args.weibo_id
+    anlysis_file = f'./analysis_result/analysis_result_{args.question_id}.md'
 
     # Fetch Weibo detail and comments
     crawler = WeiboCrawler()
