@@ -60,6 +60,7 @@ def process_weibo_post(weibo_id, analysis_file):
     comments = crawler.crawl_weibo_comments(weibo_id)
 
     titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
+    logging.info("Length of generated titles: %d", len(titles))
     if not titles:
         logging.error("No titles generated for Weibo ID: %s", weibo_id)
         return
@@ -74,6 +75,7 @@ def process_weibo_post(weibo_id, analysis_file):
         if selected_index == -1:
             logging.info("Regenerating titles...")
             titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
+            logging.info("Length of regenerated titles: %d", len(titles))
             if not titles:
                 logging.error("No titles generated for Weibo ID: %s", weibo_id)
                 return
