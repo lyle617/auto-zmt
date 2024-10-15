@@ -102,17 +102,20 @@ class zhihuCrawler:
 
         return all_answers
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Zhihu Crawler")
-    parser.add_argument('question_id', type=str, help='The ID of the question to crawl answers for')
-    parser.add_argument('--max_pages', type=int, default=3, help='Maximum number of pages to crawl (default: 3)')
-    args = parser.parse_args()
-
+def run_crawler(question_id, max_pages=3):
     cookie = os.getenv('ZHIHU_COOKIE')
     if not cookie:
         logging.error("ZHIHU_COOKIE environment variable is not set.")
         sys.exit(1)
 
     crawler = zhihuCrawler(cookie=cookie)
-    answers = crawler.get_answers(question_id=args.question_id, max_pages=args.max_pages, order='voteup_count')
-    crawler.save_answers(answers, args.question_id)
+    answers = crawler.get_answers(question_id=question_id, max_pages=max_pages, order='voteup_count')
+    crawler.save_answers(answers, question_id)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Zhihu Crawler")
+    parser.add_argument('question_id', type=str, help='The ID of the question to crawl answers for')
+    parser.add_argument('--max_pages', type=int, default=3, help='Maximum number of pages to crawl (default: 3)')
+    args = parser.parse_args()
+
+    run_crawler(args.question_id, args.max_pages)
