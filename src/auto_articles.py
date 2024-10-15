@@ -47,7 +47,17 @@ def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
     )
 
     logging.info("Response choices: %s", response.choices)
-    titles = [{"title": choice.message.content, "comment": comments[i % len(comments)]} for i, choice in enumerate(response.choices)]
+    import json
+    titles = []
+    for choice in response.choices:
+        try:
+            title_list = json.loads(choice.message.content)
+            for title_dict in title_list:
+                titles.append({"title": title_dict["title"], "comment": comments[len(titles) % len(comments)]})
+        except json.JSONDecodeError:
+            logging.error("Failed to parse JSON from response: %s", choice.message.content)
+    if not titles:
+        logging.error("No titles parsed from response for Weibo ID: %s", weibo_id)
     return titles
     
 
