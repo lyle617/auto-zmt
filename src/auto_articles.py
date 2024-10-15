@@ -51,6 +51,20 @@ def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
     
 
 
+def process_weibo_post(weibo_id, analysis_file):
+    """
+    Fetch Weibo detail and comments, and generate article titles.
+    """
+    crawler = WeiboCrawler()
+    detail = crawler.crawl_weibo_detail(weibo_id)
+    comments = crawler.crawl_weibo_comments(weibo_id)
+
+    titles = generate_article_titles(weibo_id, analysis_file, detail, comments, init_openai_client())
+    for title in titles:
+        logging.info("Generated title: \n%s", title)
+        logging.info("=====================================")
+        logging.info("Detail content: \n%s", detail)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate article titles based on Weibo post and its comments.")
     parser.add_argument('weibo_id', type=str, help='Weibo ID to fetch details and comments')
@@ -59,15 +73,6 @@ if __name__ == "__main__":
 
     logging.info("Starting auto article generation")
     weibo_id = args.weibo_id
-    anlysis_file = f'./analysis_result/title_analysis_result.md'
+    analysis_file = f'./analysis_result/title_analysis_result.md'
 
-    # Fetch Weibo detail and comments
-    crawler = WeiboCrawler()
-    detail = crawler.crawl_weibo_detail(weibo_id)
-    comments = crawler.crawl_weibo_comments(weibo_id)
-
-    titles = generate_article_titles(weibo_id, anlysis_file, detail, comments, init_openai_client())
-    for title in titles:
-        logging.info("Generated title: \n%s", title)
-        logging.info("=====================================")
-        logging.info("Detail content: \n%s", detail)
+    process_weibo_post(weibo_id, analysis_file)
