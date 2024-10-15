@@ -221,10 +221,6 @@ class toutiaoCrawler:
 
                     try:
                         logger.info(f"Downloaded article: {title}, url: {article_url}")
-                        browser.get(article_url)
-                        time.sleep(10)
-                        textContainer = browser.find_element(By.CLASS_NAME, "syl-article-base")
-                        articleHtml = textContainer.get_attribute("innerHTML")
 
                         if not os.path.exists('articles/details'):
                             os.makedirs('articles/details')
@@ -233,6 +229,10 @@ class toutiaoCrawler:
 
                         if not os.path.exists(html_output_path) and not os.path.exists(docx_output_path):
                             with open(html_output_path, 'w', encoding='utf-8') as file:
+                                browser.get(article_url)
+                                time.sleep(10)
+                                textContainer = browser.find_element(By.CLASS_NAME, "syl-article-base")
+                                articleHtml = textContainer.get_attribute("innerHTML")
                                 file.write(articleHtml)
                                 logger.info(f"Downloaded article: {title} success, url: {article_url}")
 
@@ -250,5 +250,5 @@ class toutiaoCrawler:
 
 if __name__ == "__main__":
     toutiaoCrawler = toutiaoCrawler()
-    toutiaoCrawler.articles_request()
-    # toutiaoCrawler.download_titles(max_downloads=20)
+    # toutiaoCrawler.articles_request()
+    toutiaoCrawler.download_titles(max_downloads=20)

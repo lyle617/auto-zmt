@@ -13,16 +13,10 @@ def init_openai_client():
     client = OpenAI(api_key=os.getenv('DEEPSEEK_TOKEN'), base_url="https://api.deepseek.com")
     return client
 
-def generate_article_titles(weibo_id, analysis_file, client):
+def generate_article_titles(weibo_id, analysis_file, detail, comments, client):
     """
     Generate 10 article titles based on the Weibo post and its comments.
     """
-    crawler = WeiboCrawler()
-
-    # Fetch Weibo detail and comments
-    detail = crawler.crawl_weibo_detail(weibo_id)
-    comments = crawler.crawl_weibo_comments(weibo_id)
-
     # Log the fetched Weibo detail and comments list
     logging.info("Fetched Weibo detail: %s", detail)
     logging.info("Fetched Weibo comments list: %s", comments)
@@ -60,8 +54,16 @@ def generate_article_titles(weibo_id, analysis_file, client):
 
 if __name__ == "__main__":
     logging.info("Starting auto article generation")
-    weibo_id = '5077393343776501'
-    anlysis_file = './model/analysis_result_20240912_191257.md'
-    titles = generate_article_titles(weibo_id, anlysis_file, init_openai_client())
+    weibo_id = '5084585620673148'
+    anlysis_file = './analysis_result/analysis_result_20240912_191257.md'
+
+    # Fetch Weibo detail and comments
+    crawler = WeiboCrawler()
+    detail = crawler.crawl_weibo_detail(weibo_id)
+    comments = crawler.crawl_weibo_comments(weibo_id)
+
+    titles = generate_article_titles(weibo_id, anlysis_file, detail, comments, init_openai_client())
     for title in titles:
-        logging.info("Generated title: %s", title)
+        logging.info("Generated title: \n%s", title)
+        logging.info("=====================================")
+        logging.info("Detail content: \n%s", detail)
