@@ -30,20 +30,24 @@ def request_token(refresh_token):
         'Authorization': f'Bearer {refresh_token}',
         'Accept': '*/*'
     }
+    logger.info(f"Requesting token with refresh token: {refresh_token}")
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         data = response.json()
         access_token = data.get('access_token')
         refresh_token = data.get('refresh_token')
+        logger.info(f"Token refresh successful. New access token: {access_token}, new refresh token: {refresh_token}")
         return access_token, refresh_token
     else:
         logger.error(f"Failed to refresh token: {response.text}")
         return None, None
 
 def acquire_token(refresh_token):
+    logger.info(f"Acquiring token for refresh token: {refresh_token}")
     if refresh_token in access_token_map:
         token_info = access_token_map[refresh_token]
         if time.time() < token_info['expires_at']:
+            logger.info(f"Token found in cache. Access token: {token_info['access_token']}, expires at: {token_info['expires_at']}")
             return token_info['access_token']
     
     access_token, refresh_token = request_token(refresh_token)
@@ -52,12 +56,15 @@ def acquire_token(refresh_token):
             'access_token': access_token,
             'expires_at': time.time() + ACCESS_TOKEN_EXPIRES
         }
+        logger.info(f"Token acquired. Access token: {access_token}, expires at: {access_token_map[refresh_token]['expires_at']}")
         return access_token
+    logger.warning("Failed to acquire token.")
     return None
 
 def pre_sign_url(filename, refresh_token):
     access_token = acquire_token(refresh_token)
     if not access_token:
+        logger.error("Failed to acquire access token for pre-sign URL request.")
         return None
     
     url = 'https://kimi.moonshot.cn/api/pre-sign-url'
@@ -70,23 +77,30 @@ def pre_sign_url(filename, refresh_token):
         'action': 'file',
         'name': filename
     }
+    logger.info(f"Requesting pre-sign URL for file: {filename}")
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
         data = response.json()
-        return data.get('url'), data.get('object_name')
+        pre_sign_url = data.get('url')
+        object_name = data.get('object_name')
+        logger.info(f"Pre-sign URL request successful. URL: {pre_sign_url}, Object Name: {object_name}")
+        return pre_sign_url, object_name
     else:
         logger.error(f"Failed to get pre-sign URL: {response.text}")
         return None, None
 
 def upload_file(file_path, refresh_token):
     filename = file_path.split('/')[-1]
+    logger.info(f"Uploading file: {filename}")
     upload_url, object_name = pre_sign_url(filename, refresh_token)
     if not upload_url:
+        logger.error("Failed to get upload URL.")
         return None
     
     with open(file_path, 'rb') as file_data:
         response = requests.put(upload_url, headers={'Content-Type': 'application/octet-stream'}, data=file_data)
         if response.status_code == 200:
+            logger.info(f"File upload successful. Object Name: {object_name}")
             return object_name
         else:
             logger.error(f"Failed to upload file: {response.text}")
