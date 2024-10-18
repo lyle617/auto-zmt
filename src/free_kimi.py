@@ -25,6 +25,7 @@ FAKE_HEADERS = {
 access_token_map = {}
 
 def request_token(refresh_token):
+    logger.info(f"Entering request_token with refresh token: {refresh_token}")
     url = 'https://kimi.moonshot.cn/api/auth/token/refresh'
     headers = {
         'Authorization': f'Bearer {refresh_token}',
@@ -37,17 +38,20 @@ def request_token(refresh_token):
         access_token = data.get('access_token')
         refresh_token = data.get('refresh_token')
         logger.info(f"Token refresh successful. New access token: {access_token}, new refresh token: {refresh_token}")
+        logger.info(f"Exiting request_token with access token: {access_token}, refresh token: {refresh_token}")
         return access_token, refresh_token
     else:
         logger.error(f"Failed to refresh token: {response.text}")
+        logger.info("Exiting request_token with failure")
         return None, None
 
 def acquire_token(refresh_token):
-    logger.info(f"Acquiring token for refresh token: {refresh_token}")
+    logger.info(f"Entering acquire_token with refresh token: {refresh_token}")
     if refresh_token in access_token_map:
         token_info = access_token_map[refresh_token]
         if time.time() < token_info['expires_at']:
             logger.info(f"Token found in cache. Access token: {token_info['access_token']}, expires at: {token_info['expires_at']}")
+            logger.info(f"Exiting acquire_token with access token: {token_info['access_token']}")
             return token_info['access_token']
     
     access_token, refresh_token = request_token(refresh_token)
@@ -57,8 +61,10 @@ def acquire_token(refresh_token):
             'expires_at': time.time() + ACCESS_TOKEN_EXPIRES
         }
         logger.info(f"Token acquired. Access token: {access_token}, expires at: {access_token_map[refresh_token]['expires_at']}")
+        logger.info(f"Exiting acquire_token with access token: {access_token}")
         return access_token
     logger.warning("Failed to acquire token.")
+    logger.info("Exiting acquire_token with failure")
     return None
 
 def pre_sign_url(filename, refresh_token):
