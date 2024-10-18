@@ -1,18 +1,61 @@
 import json
+import os
 from typing import Literal, Generator, Optional, Union
 import requests
 import filetype
 import hashlib
 
-from .exceptions import *
-from .config import Config
+class CreateFile(Exception):
+    """创建配置文件"""
+    pass
 
 
-class Chatbot:
+class ConfigMissing(Exception):
+    """缺少配置项"""
+    pass
+
+
+class UploadError(Exception):
+    """上传错误"""
+    pass
+
+
+class UnexpectedResponse(Exception):
+    """不正常响应"""
+    pass
+
+class Config:
+    """配置文件"""
+    def __init__(self, filepath: str):
+        self.__config_template = {
+            "access_token": "",
+            "refresh_token": ""
+        }
+        self.__filepath = filepath
+        if not os.access(filepath, os.F_OK):
+            with open(filepath, "w+") as f:
+                json.dump(self.__config_template, f, indent=4)
+                raise CreateFile("配置文件已创建，请先填写")
+        else:
+            with open(filepath, "r") as f:
+                self.__content: dict = json.loads(f.read())
+
+    def __save(self):
+        with open(self.__filepath, "w") as f:
+            json.dump(self.__content, f, indent=4)
+
+    def __getitem__(self, item):
+        return self.__content.get(item, None)
+
+    def __setitem__(self, key, value):
+        self.__content[key] = value
+        self.__save()
+
+class KimiChat:
     """Kimi 聊天基类"""
     api_base = "https://kimi.moonshot.cn/api"
 
-    def __init__(self, config_obj: object = None, config_path: str = "./config.json"):
+    def __init__(self, config_obj: object = None, config_path: str = ".kimi/config.json"):
         """
         初始化
             config_obj: 可自定义的配置文件对象，以便于与其他配置文件对接，须实现__getitem__和__setitem__方法，
@@ -292,4 +335,15 @@ class Chatbot:
             for chunk in resp_generator:
                 result = chunk
             return result
+
+if __name__ == "__main__":
+    chatbot = KimiChat()
+    conversation = chatbot.create_conversation("Test Conversation")
+    print(conversation)
+    response = chatbot.ask("分析总结文件内容", conversation["id"], stream=False, timeout=10, use_search=True, file='/Users/gqlin/Documents/workspace/auto-coder-demo/auto-zmt/7405504703687115273.docx')
+    print(response)
+    chatbot.delete_conversation(conversation["id"])
+    print("Conversation deleted")
+    print(chatbot.get_conversations())
+    print(chatbot.get_history(conversation["id"]))
 
