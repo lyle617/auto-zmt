@@ -225,7 +225,8 @@ class KimiChat:
         """
 
         file_type = filetype.guess_mime(file)
-        file_name = "" + hashlib.md5(file).hexdigest() + "." + file_type.split("/")[1]
+        file_name = "" + hashlib.md5(file.encode()).hexdigest() + "." + file_type.split("/")[1]
+    file_name = "" + hashlib.md5(file).hexdigest() + "." + file_type.split("/")[1]
 
         presign_url = self.__get_presign_url(file_name)
         self.__request(
