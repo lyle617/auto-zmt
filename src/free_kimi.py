@@ -135,7 +135,7 @@ def summarize_file(file_path, refresh_token):
         data = response.json()
         return data
     else:
-        logger.error(f"Failed to summarize file: {response.text.encode('utf-8', errors='replace').decode('utf-8')}")
+        logger.error(f"Failed to summarize file: {response.text}")
         return None
 
 # 示例用法
