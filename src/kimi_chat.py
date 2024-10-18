@@ -325,8 +325,8 @@ class KimiChat:
                             prompt,
                             conversation_id,
                             timeout,
-            use_search,
-            file
+                            use_search,
+                            file
                         )
         if stream:
             return resp_generator
@@ -340,7 +340,10 @@ if __name__ == "__main__":
     chatbot = KimiChat()
     conversation = chatbot.create_conversation("Test Conversation")
     print(conversation)
-    response = chatbot.ask("分析总结文件内容", conversation["id"], stream=False, timeout=10, use_search=True, file='/Users/gqlin/Documents/workspace/auto-coder-demo/auto-zmt/7405504703687115273.docx')
+    filepath = '/Users/gqlin/Documents/workspace/auto-coder-demo/auto-zmt/7405504703687115273.docx'
+    with open(filepath, "rb") as f:
+        file = f.read()
+    response = chatbot.ask("分析总结文件内容", conversation["id"], stream=False, timeout=10, use_search=True, file=file)
     print(response)
     chatbot.delete_conversation(conversation["id"])
     print("Conversation deleted")
