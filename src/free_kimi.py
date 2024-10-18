@@ -80,11 +80,15 @@ def pre_sign_url(filename, refresh_token):
     logger.info(f"Requesting pre-sign URL for file: {filename}")
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
-        data = response.json()
-        pre_sign_url = data.get('url')
-        object_name = data.get('object_name')
-        logger.info(f"Pre-sign URL request successful. URL: {pre_sign_url}, Object Name: {object_name}")
-        return pre_sign_url, object_name
+        try:
+            data = response.json()
+            pre_sign_url = data.get('url')
+            object_name = data.get('object_name')
+            logger.info(f"Pre-sign URL request successful. URL: {pre_sign_url}, Object Name: {object_name}")
+            return pre_sign_url, object_name
+        except requests.exceptions.JSONDecodeError:
+            logger.error(f"Failed to decode JSON from response: {response.text}")
+            return None, None
     else:
         logger.error(f"Failed to get pre-sign URL: {response.text}")
         return None, None
