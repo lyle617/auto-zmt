@@ -137,14 +137,81 @@ def summarize_file(file_path, refresh_token):
     else:
         logger.error(f"Failed to summarize file: {response.text}")
         return None
+    
+def create_conversation(model, name, refresh_token):
+    access_token = acquire_token(refresh_token)
+    if not access_token:
+        return None
+    
+    url = 'https://kimi.moonshot.cn/api/chat'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': '*/*',
+        **FAKE_HEADERS
+    }
+    payload = {
+        'born_from': '',
+        'is_example': False,
+        'kimiplus_id': model,
+        'name': name
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        data = response.json()
+        return data.get('id')
+    else:
+        logger.error(f"Failed to create conversation: {response.text}")
+        return None
 
+def create_completion(model, messages, refresh_token, use_search=True, ref_conv_id=None, retry_count=0):
+    if retry_count >= 3:
+        logger.error("Max retry count reached")
+        return None
+    
+    access_token = acquire_token(refresh_token)
+    if not access_token:
+        return None
+    
+    conv_id = ref_conv_id or create_conversation(model, "未命名会话", refresh_token)
+    if not conv_id:
+        return None
+    
+    url = f'https://kimi.moonshot.cn/api/chat/{conv_id}/completion/stream'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': '*/*',
+        **FAKE_HEADERS
+    }
+    payload = {
+        'kimiplus_id': model,
+        'messages': messages,
+        'use_search': use_search
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        logger.error(f"Failed to create completion: {response.text}")
+        return create_completion(model, messages, refresh_token, use_search, ref_conv_id, retry_count + 1)
+    
 # 示例用法
 if __name__ == "__main__":
     refresh_token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTczNjk5Njg2MywiaWF0IjoxNzI5MjIwODYzLCJqdGkiOiJjczh0MXZ1Y3A3ZmY0cTRpYmpsMCIsInR5cCI6InJlZnJlc2giLCJhcHBfaWQiOiJraW1pIiwic3ViIjoiY252cDZwc3VkdTZmODgxMTk0Y2ciLCJzcGFjZV9pZCI6ImNudnA2cHN1ZHU2Zjg4MTE5NGMwIiwiYWJzdHJhY3RfdXNlcl9pZCI6ImNudnA2cHN1ZHU2Zjg4MTE5NGJnIn0.mt34JkF7w20jHwlNrfQpSUgc8ZMWfymsrLDGlhGmQEWEJ7AVMFQmFzn9Mka0YlkkAAFQcaj-W3Sp61yBhvB3-Q"
 
-    file_path = "file:///Users/gqlin/Documents/workspace/auto-coder-demo/auto-zmt/7405504703687115273.docx"
-    summary = summarize_file(file_path, refresh_token)
-    if summary:
-        print("File Summary:", summary)
+    # file_path = "https://mj101-1317487292.cos.ap-shanghai.myqcloud.com/ai/test.pdf"
+    # summary = summarize_file(file_path, refresh_token)
+    # if summary:
+    #     print("File Summary:", summary)
+    # else:
+    #     print("Failed to summarize the file.")
+    model = "kimi"
+    messages = [
+        {"role": "user", "content": "你好，Kimi！"},
+        {"role": "assistant", "content": "你好！有什么我可以帮助你的吗？"}
+    ]
+    
+    completion = create_completion(model, messages, refresh_token)
+    if completion:
+        print("Completion:", completion)
     else:
-        print("Failed to summarize the file.")
+        print("Failed to get completion.")
