@@ -87,7 +87,11 @@ def pre_sign_url(filename, refresh_token):
             logger.info(f"Pre-sign URL request successful. URL: {pre_sign_url}, Object Name: {object_name}")
             return pre_sign_url, object_name
         except requests.exceptions.JSONDecodeError:
-            logger.error(f"Failed to decode JSON from response: {response.text}")
+            try:
+                json_response = response.json()
+                logger.error(f"Failed to decode JSON from response: {json.dumps(json_response, indent=4)}")
+            except:
+                logger.error(f"Failed to decode JSON from response: {response.text}")
             return None, None
     else:
         logger.error(f"Failed to get pre-sign URL: {response.text}")
