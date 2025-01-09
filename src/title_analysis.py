@@ -80,7 +80,7 @@ def read_titles_from_csv(file_path):
         reader = csv.DictReader(csvfile)
         for row in reader:
             title = row['title']
-            filtered_title = dfa_filter.filter(title)
+            filtered_title = dfa_filter.filter(title, repl="*")
             logging.info("Original title: %s, Filtered title: %s", title, filtered_title)
             titles.append((int(row['like_count']), filtered_title))
     
