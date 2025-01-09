@@ -79,8 +79,8 @@ def analyze_titles_with_deepseek(titles):
             # 分析总结
             markdown_content += "## 分析总结\n"
             summary = analysis_json.get('analysis_summary', {})
-            markdown_content += f"### 量化分析\n{summary.get('quantitative_analysis', '')}\n\n"
-            markdown_content += f"### 方法论总结\n{summary.get('methodology_summary', '')}\n\n"
+            # markdown_content += f"### 量化分析\n{summary.get('quantitative_analysis', '')}\n\n"
+            # markdown_content += f"### 方法论总结\n{summary.get('methodology_summary', '')}\n\n"
             
             # 关键词统计
             markdown_content += "## 关键词统计\n"
