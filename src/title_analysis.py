@@ -64,8 +64,52 @@ def analyze_titles_with_deepseek(titles):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         markdown_file_path = os.path.join(model_dir, f'analysis_result_{timestamp}.md')
         logging.info("Saving analysis result to %s", markdown_file_path)
-        with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
-            md_file.write(f"# Analysis Result\n\n{analysis_result['choices'][0]['message']['content']}")
+        
+        # Convert JSON to markdown format
+        analysis_data = analysis_result['choices'][0]['message']['content']
+        try:
+            analysis_json = json.loads(analysis_data)
+            
+            markdown_content = f"# Title Analysis Report\n\n"
+            markdown_content += f"**Generated at:** {timestamp}\n\n"
+            
+            # Add analysis summary
+            markdown_content += "## Analysis Summary\n"
+            markdown_content += analysis_json.get('analysis_summary', '') + "\n\n"
+            
+            # Add keyword statistics
+            markdown_content += "## Keyword Statistics\n"
+            markdown_content += "| Keyword | Frequency | Sentiment |\n"
+            markdown_content += "|---------|-----------|-----------|\n"
+            for kw in analysis_json.get('keyword_stats', []):
+                markdown_content += f"| {kw.get('keyword', '')} | {kw.get('frequency', '')} | {kw.get('sentiment', '')} |\n"
+            markdown_content += "\n"
+            
+            # Add structure statistics
+            markdown_content += "## Structure Statistics\n"
+            markdown_content += "| Metric | Value |\n"
+            markdown_content += "|--------|-------|\n"
+            for stat in analysis_json.get('structure_stats', []):
+                markdown_content += f"| {stat.get('metric', '')} | {stat.get('value', '')} |\n"
+            markdown_content += "\n"
+            
+            # Add best practices
+            markdown_content += "## Best Practices\n"
+            for practice in analysis_json.get('best_practices', []):
+                markdown_content += f"- {practice}\n"
+            markdown_content += "\n"
+            
+            # Add example titles
+            markdown_content += "## Example Titles\n"
+            for i, title in enumerate(analysis_json.get('example_titles', []), 1):
+                markdown_content += f"{i}. {title}\n"
+            
+            with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
+                md_file.write(markdown_content)
+        except json.JSONDecodeError:
+            # If response is not JSON, save as plain text
+            with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
+                md_file.write(f"# Analysis Result\n\n{analysis_data}")
     else:
         logging.error("API call failed with status code: %s", response.status_code)
 
