@@ -86,19 +86,22 @@ def analyze_titles_with_deepseek(titles):
             markdown_content += "## 关键词统计\n"
             keyword_stats = analysis_json.get('keyword_stats', {})
             
+            # 高频关键词
             markdown_content += "### 高频关键词\n"
             markdown_content += "| 关键词 | 频率 | 情感倾向 |\n"
             markdown_content += "|--------|------|----------|\n"
             for kw in keyword_stats.get('high_frequency_keywords', []):
-                markdown_content += f"| {kw.get('关键词', '')} | {kw.get('频率', '')} | {kw.get('情感倾向', '')} |\n"
+                markdown_content += f"| {kw.get('keyword', '')} | {kw.get('frequency', '')} | {kw.get('sentiment', '')} |\n"
             markdown_content += "\n"
             
+            # 情感关键词
             markdown_content += "### 情感关键词\n"
-            sentiment_kws = keyword_stats.get('emotional_keywords', {})
-            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('正面', [])) + "\n"
-            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('负面', [])) + "\n"
-            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('中性', [])) + "\n\n"
+            sentiment_kws = keyword_stats.get('sentiment_keywords', {})
+            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('positive', [])) + "\n"
+            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('negative', [])) + "\n"
+            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('neutral', [])) + "\n\n"
             
+            # 关键词组合模式
             markdown_content += "### 关键词组合模式\n"
             for pattern in keyword_stats.get('keyword_combination_patterns', []):
                 markdown_content += f"- {pattern}\n"
@@ -140,8 +143,9 @@ def analyze_titles_with_deepseek(titles):
             
             markdown_content += "### 季节性热点关键词\n"
             seasonal_kws = trend_analysis.get('seasonal_hot_keywords', {})
-            for season, kws in seasonal_kws.items():
-                markdown_content += f"- {season}: " + ", ".join(kws) + "\n"
+            if seasonal_kws:
+                for season, kws in seasonal_kws.items():
+                    markdown_content += f"- {season}: " + ", ".join(kws) + "\n"
             markdown_content += "\n"
             
             # 最佳实践
