@@ -103,13 +103,8 @@ def analyze_titles_with_deepseek(titles):
             
             # 关键词组合模式
             markdown_content += "### 关键词组合模式\n"
-            markdown_content += "- 高频关键词常与情感关键词结合使用，如：\n"
-            markdown_content += "  - '中国'与'战争'\n"
-            markdown_content += "  - '美国'与'特朗普'\n" 
-            markdown_content += "  - '离婚'与'自杀'\n"
-            markdown_content += "- 其他常见组合模式：\n"
             for pattern in keyword_stats.get('keyword_combination_patterns', []):
-                markdown_content += f"  - {pattern}\n"
+                markdown_content += f"  {pattern}\n"
             markdown_content += "\n"
             
             # 结构统计
