@@ -101,7 +101,7 @@ class toutiaoCrawler:
         # Filter out articles with sensitive words
         deduplicated_articles = [
             article for article in deduplicated_articles 
-            if not dfa_filter.exists(article.get('title', ''))
+            if not dfa_filter.filter(article.get('title', '')) != article.get('title', '')
         ]
 
         # Filter out articles with has_video=1

@@ -179,6 +179,22 @@ class DFAFilter():
         traverse(self.keyword_chains, "")
         return keywords
 
+    def exists(self, message):
+        """Check if message contains any keywords"""
+        message = message.lower()
+        start = 0
+        while start < len(message):
+            level = self.keyword_chains
+            for char in message[start:]:
+                if char in level:
+                    if self.delimit in level[char]:
+                        return True
+                    level = level[char]
+                else:
+                    break
+            start += 1
+        return False
+
 
 def test_first_character():
     gfw = DFAFilter()
