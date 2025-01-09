@@ -67,6 +67,9 @@ def analyze_titles_with_deepseek(titles):
         
         # Convert JSON to markdown format
         analysis_data = analysis_result['choices'][0]['message']['content']
+        # Remove ```json and ``` markers if present
+        if analysis_data.startswith('```json') and analysis_data.endswith('```'):
+            analysis_data = analysis_data[7:-3].strip()
         try:
             analysis_json = json.loads(analysis_data)
             
