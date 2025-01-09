@@ -73,7 +73,9 @@ def read_titles_from_csv(file_path):
     logging.info("Reading titles from CSV file: %s", file_path)
     titles = []
     dfa_filter = DFAFilter()
-    dfa_filter.parse('src/keywords')
+    # Use absolute path for keywords file
+    keywords_path = os.path.join(os.path.dirname(__file__), 'keywords')
+    dfa_filter.parse(keywords_path)
     with open(file_path, mode='r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
