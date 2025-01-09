@@ -158,6 +158,20 @@ class DFAFilter():
 
         return ''.join(ret)
 
+    def get_keywords(self):
+        """Get all registered keywords"""
+        keywords = []
+        
+        def traverse(node, current_word):
+            if self.delimit in node:
+                keywords.append(current_word)
+            for char, child_node in node.items():
+                if char != self.delimit:
+                    traverse(child_node, current_word + char)
+        
+        traverse(self.keyword_chains, "")
+        return keywords
+
 
 def test_first_character():
     gfw = DFAFilter()
