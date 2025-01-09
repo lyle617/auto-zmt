@@ -127,8 +127,11 @@ def analyze_titles_with_deepseek(titles):
             
             markdown_content += "### 标点符号使用频率\n"
             punct_freq = structure_stats.get('punctuation_frequency', {})
-            for punct, count in punct_freq.items():
-                markdown_content += f"- {punct}: {count}次\n"
+            if isinstance(punct_freq, dict):
+                for punct, count in punct_freq.items():
+                    markdown_content += f"- {punct}: {count}次\n"
+            else:
+                markdown_content += f"- {punct_freq}\n"
             markdown_content += "\n"
             
             markdown_content += "### 句式结构\n"
