@@ -28,7 +28,7 @@ class NaiveFilter():
         for keyword in open(path):
             kw = keyword.strip().decode('utf-8').lower()
             self.keywords.add(kw)
-            logging.info(f"NaiveFilter loaded keyword: {kw}")
+            # logging.info(f"NaiveFilter loaded keyword: {kw}")
 
     def filter(self, message, repl="*"):
         message = message.lower()
@@ -136,7 +136,7 @@ class DFAFilter():
             for keyword in f:
                 kw = keyword.strip()
                 self.add(kw)
-                logging.info(f"DFAFilter loaded keyword: {kw}")
+                # logging.info(f"DFAFilter loaded keyword: {kw}")
 
     def filter(self, message, repl="*"):
         # if not isinstance(message, unicode):
