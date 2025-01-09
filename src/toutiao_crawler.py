@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Add a logger
 logger = logging.getLogger(__name__)
 
-filter_sources = ['央视网', '新华社']
+filter_sources = ['央视网', '新华社', '央视新闻']
 
 class toutiaoCrawler:
     def __init__(self):
