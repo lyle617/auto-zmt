@@ -54,7 +54,11 @@ class zhihuCrawler:
                 target = answer.get('target', {})
                 author = target.get('author', {})
                 content = target.get('content', '')
-                content = re.sub('<.*?>', '', content)
+                # Only remove specific HTML tags that are not useful
+                content = re.sub(r'<br\s*/?>', '\n', content)  # Convert <br> to newlines
+                content = re.sub(r'<img[^>]+>', '', content)  # Remove images
+                content = re.sub(r'<a[^>]+>|</a>', '', content)  # Remove links
+                content = re.sub(r'<[^>]+>', '', content)  # Remove remaining HTML tags
                 # logging.info(f"Writing answer to CSV: Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}, Comment Count: {target.get('comment_count')}, Content: {content}")
                 writer.writerow([author.get('id'), author.get('name'), author.get('type'), author.get('headline'), target.get('voteup_count'), target.get('thanks_count'), target.get('comment_count'), content])
                 # logging.info(f"Successfully wrote answer to CSV: Author ID: {author.get('id')}")
@@ -92,8 +96,12 @@ class zhihuCrawler:
                 target = answer.get('target', {})
                 author = target.get('author', {})
                 content = target.get('content', {})
-                content = re.sub('<.*?>', '', content)
-                logging.info(f"answer: {json.dumps(answer, indent=2, ensure_ascii=False)}") 
+                # Only remove specific HTML tags that are not useful
+                content = re.sub(r'<br\s*/?>', '\n', content)  # Convert <br> to newlines
+                content = re.sub(r'<img[^>]+>', '', content)  # Remove images
+                content = re.sub(r'<a[^>]+>|</a>', '', content)  # Remove links
+                content = re.sub(r'<[^>]+>', '', content)  # Remove remaining HTML tags
+                logging.info(f"answer: {json.dumps(answer, indent=2, ensure_ascii=False)}")
                 # logging.info(f"Author ID: {author.get('id')}, Author Nickname: {author.get('name')}, Author Type: {author.get('type')}, Author Headline: {author.get('headline')}, Vote-up Count: {target.get('voteup_count')}, Thanks Count: {target.get('thanks_count')}")
 
             all_answers.extend(data.get('data', []))
