@@ -70,39 +70,87 @@ def analyze_titles_with_deepseek(titles):
         try:
             analysis_json = json.loads(analysis_data)
             
-            markdown_content = f"# Title Analysis Report\n\n"
-            markdown_content += f"**Generated at:** {timestamp}\n\n"
+            markdown_content = f"# 标题分析报告\n\n"
+            markdown_content += f"**生成时间:** {timestamp}\n\n"
             
-            # Add analysis summary
-            markdown_content += "## Analysis Summary\n"
-            markdown_content += analysis_json.get('analysis_summary', '') + "\n\n"
+            # 分析总结
+            markdown_content += "## 分析总结\n"
+            summary = analysis_json.get('analysis_summary', {})
+            markdown_content += f"### 量化分析\n{summary.get('quantitative_analysis', '')}\n\n"
+            markdown_content += f"### 方法论总结\n{summary.get('methodology_summary', '')}\n\n"
             
-            # Add keyword statistics
-            markdown_content += "## Keyword Statistics\n"
-            markdown_content += "| Keyword | Frequency | Sentiment |\n"
-            markdown_content += "|---------|-----------|-----------|\n"
-            for kw in analysis_json.get('keyword_stats', []):
+            # 关键词统计
+            markdown_content += "## 关键词统计\n"
+            keyword_stats = analysis_json.get('keyword_stats', {})
+            
+            markdown_content += "### 高频关键词\n"
+            markdown_content += "| 关键词 | 频率 | 情感倾向 |\n"
+            markdown_content += "|--------|------|----------|\n"
+            for kw in keyword_stats.get('high_frequency_keywords', []):
                 markdown_content += f"| {kw.get('keyword', '')} | {kw.get('frequency', '')} | {kw.get('sentiment', '')} |\n"
             markdown_content += "\n"
             
-            # Add structure statistics
-            markdown_content += "## Structure Statistics\n"
-            markdown_content += "| Metric | Value |\n"
-            markdown_content += "|--------|-------|\n"
-            for stat in analysis_json.get('structure_stats', []):
-                markdown_content += f"| {stat.get('metric', '')} | {stat.get('value', '')} |\n"
+            markdown_content += "### 情感关键词\n"
+            sentiment_kws = keyword_stats.get('sentiment_keywords', {})
+            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('positive', [])) + "\n"
+            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('negative', [])) + "\n"
+            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('neutral', [])) + "\n\n"
+            
+            markdown_content += f"### 关键词组合模式\n{keyword_stats.get('keyword_combination_patterns', '')}\n\n"
+            
+            # 结构统计
+            markdown_content += "## 结构统计\n"
+            structure_stats = analysis_json.get('structure_stats', {})
+            
+            markdown_content += "### 标题长度分布\n"
+            length_dist = structure_stats.get('title_length_distribution', {})
+            for length, count in length_dist.items():
+                markdown_content += f"- {length}: {count}%\n"
             markdown_content += "\n"
             
-            # Add best practices
-            markdown_content += "## Best Practices\n"
-            for practice in analysis_json.get('best_practices', []):
-                markdown_content += f"- {practice}\n"
+            markdown_content += "### 标点符号使用频率\n"
+            punct_freq = structure_stats.get('punctuation_frequency', {})
+            for punct, count in punct_freq.items():
+                markdown_content += f"- {punct}: {count}次\n"
             markdown_content += "\n"
             
-            # Add example titles
-            markdown_content += "## Example Titles\n"
+            markdown_content += "### 句式结构\n"
+            sentence_struct = structure_stats.get('sentence_structure', {})
+            for struct, count in sentence_struct.items():
+                markdown_content += f"- {struct}: {count}%\n"
+            markdown_content += "\n"
+            
+            # 效果分析
+            markdown_content += "## 效果分析\n"
+            effect_analysis = analysis_json.get('effect_analysis', {})
+            markdown_content += f"- 点击率相关性: {effect_analysis.get('click_through_rate_correlation', '')}\n"
+            markdown_content += f"- 阅读完成率: {effect_analysis.get('completion_rate_by_length', '')}\n"
+            markdown_content += f"- 情感与互动关系: {effect_analysis.get('sentiment_interaction_relation', '')}\n\n"
+            
+            # 趋势分析
+            markdown_content += "## 趋势分析\n"
+            trend_analysis = analysis_json.get('trend_analysis', {})
+            markdown_content += f"### 近期热门标题特征\n{trend_analysis.get('recent_hot_title_features', '')}\n\n"
+            
+            markdown_content += "### 季节性热点关键词\n"
+            seasonal_kws = trend_analysis.get('seasonal_hot_keywords', {})
+            for season, kws in seasonal_kws.items():
+                markdown_content += f"- {season}: " + ", ".join(kws) + "\n"
+            markdown_content += "\n"
+            
+            # 最佳实践
+            markdown_content += "## 最佳实践\n"
+            best_practices = analysis_json.get('best_practices', {})
+            markdown_content += f"- 标题长度建议: {best_practices.get('title_length_recommendation', '')}\n"
+            markdown_content += f"- 推荐句式结构: {best_practices.get('recommended_sentence_structure', '')}\n"
+            markdown_content += f"- 情感关键词使用: {best_practices.get('emotional_keyword_usage', '')}\n"
+            markdown_content += f"- 标点符号使用指南: {best_practices.get('punctuation_usage_guidelines', '')}\n\n"
+            
+            # 示例标题
+            markdown_content += "## 示例标题\n"
             for i, title in enumerate(analysis_json.get('example_titles', []), 1):
-                markdown_content += f"{i}. {title}\n"
+                markdown_content += f"{i}. **{title.get('title', '')}**\n"
+                markdown_content += f"    - 特征: {title.get('features', '')}\n"
             
             with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
                 md_file.write(markdown_content)
