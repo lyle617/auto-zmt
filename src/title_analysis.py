@@ -90,16 +90,19 @@ def analyze_titles_with_deepseek(titles):
             markdown_content += "| 关键词 | 频率 | 情感倾向 |\n"
             markdown_content += "|--------|------|----------|\n"
             for kw in keyword_stats.get('high_frequency_keywords', []):
-                markdown_content += f"| {kw.get('keyword', '')} | {kw.get('frequency', '')} | {kw.get('sentiment', '')} |\n"
+                markdown_content += f"| {kw.get('关键词', '')} | {kw.get('频率', '')} | {kw.get('情感倾向', '')} |\n"
             markdown_content += "\n"
             
             markdown_content += "### 情感关键词\n"
-            sentiment_kws = keyword_stats.get('sentiment_keywords', {})
-            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('positive', [])) + "\n"
-            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('negative', [])) + "\n"
-            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('neutral', [])) + "\n\n"
+            sentiment_kws = keyword_stats.get('emotional_keywords', {})
+            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('正面', [])) + "\n"
+            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('负面', [])) + "\n"
+            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('中性', [])) + "\n\n"
             
-            markdown_content += f"### 关键词组合模式\n{keyword_stats.get('keyword_combination_patterns', '')}\n\n"
+            markdown_content += "### 关键词组合模式\n"
+            for pattern in keyword_stats.get('keyword_combination_patterns', []):
+                markdown_content += f"- {pattern}\n"
+            markdown_content += "\n"
             
             # 结构统计
             markdown_content += "## 结构统计\n"
