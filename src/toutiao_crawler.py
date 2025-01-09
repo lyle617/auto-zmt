@@ -7,6 +7,7 @@ import time
 import logging
 
 import requests
+from native_filter import DFAFilter
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -91,6 +92,17 @@ class toutiaoCrawler:
             if article['title'] not in unique_titles:
                 unique_titles.add(article['title'])
                 deduplicated_articles.append(article)    
+
+        # Initialize DFA filter
+        dfa_filter = DFAFilter()
+        keywords_path = os.path.join(os.path.dirname(__file__), 'keywords')
+        dfa_filter.parse(keywords_path)
+
+        # Filter out articles with sensitive words
+        deduplicated_articles = [
+            article for article in deduplicated_articles 
+            if not dfa_filter.exists(article.get('title', ''))
+        ]
 
         # Filter out articles with has_video=1
         deduplicated_articles = [article for article in deduplicated_articles if article.get('has_video', '') != 1]
