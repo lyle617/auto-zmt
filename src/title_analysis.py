@@ -62,8 +62,11 @@ def analyze_titles_with_deepseek(titles):
 
         # Save the analysis result to a markdown file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        markdown_file_path = os.path.join(model_dir, f'analysis_result_{timestamp}.md')
-        logging.info("Saving analysis result to %s", markdown_file_path)
+        timestamp_file = os.path.join(model_dir, f'analysis_result_{timestamp}.md')
+        latest_file = os.path.join(model_dir, 'title_analysis_result.md')
+        backup_file = os.path.join(model_dir, f'title_analysis_result_{timestamp}.bak')
+
+        logging.info("Saving analysis result to %s", timestamp_file)
         
         # Convert JSON to markdown format
         analysis_data = analysis_result['choices'][0]['message']['content']
@@ -169,11 +172,22 @@ def analyze_titles_with_deepseek(titles):
                 markdown_content += f"{i}. **{title.get('title', '')}**\n"
                 markdown_content += f"    - 特征: {title.get('features', '')}\n"
             
-            with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
+            # Save to timestamp file
+            with open(timestamp_file, 'w', encoding='utf-8') as md_file:
+                md_file.write(markdown_content)
+            
+            # Backup existing title_analysis_result.md if it exists
+            if os.path.exists(latest_file):
+                logging.info(f"Backing up existing title_analysis_result.md to {backup_file}")
+                os.rename(latest_file, backup_file)
+            
+            # Copy new analysis to title_analysis_result.md
+            logging.info(f"Updating title_analysis_result.md with new analysis")
+            with open(latest_file, 'w', encoding='utf-8') as md_file:
                 md_file.write(markdown_content)
         except json.JSONDecodeError:
             # If response is not JSON, save as plain text
-            with open(markdown_file_path, 'w', encoding='utf-8') as md_file:
+            with open(timestamp_file, 'w', encoding='utf-8') as md_file:
                 md_file.write(f"# Analysis Result\n\n{analysis_data}")
     else:
         logging.error("API call failed with status code: %s", response.status_code)
