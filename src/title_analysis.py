@@ -82,8 +82,8 @@ def analyze_titles_with_deepseek(titles):
             # 分析总结
             markdown_content += "## 分析总结\n"
             summary = analysis_json.get('analysis_summary', {})
-            # markdown_content += f"### 量化分析\n{summary.get('quantitative_analysis', '')}\n\n"
-            # markdown_content += f"### 方法论总结\n{summary.get('methodology_summary', '')}\n\n"
+            # markdown_content += f"### 量化分析\n{summary.get('quantitative_analysis', '')}\n\n" 
+            markdown_content += f"### 方法论总结\n{summary.get('methodology_summary', '')}\n\n"
             
             # 关键词统计
             markdown_content += "## 关键词统计\n"
@@ -94,22 +94,23 @@ def analyze_titles_with_deepseek(titles):
             markdown_content += "| 关键词 | 频率 | 情感倾向 |\n"
             markdown_content += "|--------|------|----------|\n"
             for kw in keyword_stats.get('high_frequency_keywords', []):
-                markdown_content += f"| {kw.get('keyword', '')} | {kw.get('frequency', '')} | {kw.get('sentiment', '')} |\n"
+                keyword = kw.get('关键词', kw.get('keyword', ''))
+                frequency = kw.get('频率', kw.get('frequency', ''))
+                sentiment = kw.get('情感倾向', kw.get('sentiment', ''))
+                markdown_content += f"| {keyword} | {frequency} | {sentiment} |\n"
             markdown_content += "\n"
             
             # 情感关键词
             markdown_content += "### 情感关键词\n"
-            sentiment_kws = keyword_stats.get('sentiment_keywords', {})
-            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('positive', [])) + "\n"
-            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('negative', [])) + "\n"
-            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('neutral', [])) + "\n\n"
+            sentiment_kws = keyword_stats.get('emotional_keywords', keyword_stats.get('sentiment_keywords', {}))
+            markdown_content += "- 正面: " + ", ".join(sentiment_kws.get('正面', [])) + "\n"
+            markdown_content += "- 负面: " + ", ".join(sentiment_kws.get('负面', [])) + "\n"
+            markdown_content += "- 中性: " + ", ".join(sentiment_kws.get('中性', [])) + "\n\n"
             
             # 关键词组合模式
             markdown_content += "### 关键词组合模式\n"
             combination_patterns = keyword_stats.get('keyword_combination_patterns', '')
-            if combination_patterns:
-                markdown_content += f"{combination_patterns}\n"
-            markdown_content += "\n"
+            markdown_content += f"{combination_patterns}\n\n"
             
             # 结构统计
             markdown_content += "## 结构统计\n"
@@ -135,8 +136,11 @@ def analyze_titles_with_deepseek(titles):
             
             markdown_content += "### 句式结构\n"
             sentence_struct = structure_stats.get('sentence_structure', {})
-            for struct, count in sentence_struct.items():
-                markdown_content += f"- {struct}: {count}%\n"
+            if isinstance(sentence_struct, dict):
+                for struct, count in sentence_struct.items():
+                    markdown_content += f"- {struct}: {count}%\n"
+            else:
+                markdown_content += f"- {sentence_struct}\n"
             markdown_content += "\n"
             
             # 效果分析
@@ -144,18 +148,18 @@ def analyze_titles_with_deepseek(titles):
             effect_analysis = analysis_json.get('effect_analysis', {})
             markdown_content += f"- 点击率相关性: {effect_analysis.get('click_through_rate_correlation', '')}\n"
             markdown_content += f"- 阅读完成率: {effect_analysis.get('completion_rate_by_length', '')}\n"
-            markdown_content += f"- 情感与互动关系: {effect_analysis.get('sentiment_interaction_relation', '')}\n\n"
+            markdown_content += f"- 情感与互动关系: {effect_analysis.get('emotional_impact_on_engagement', '')}\n\n"
             
             # 趋势分析
             markdown_content += "## 趋势分析\n"
             trend_analysis = analysis_json.get('trend_analysis', {})
-            markdown_content += f"### 近期热门标题特征\n{trend_analysis.get('recent_hot_title_features', '')}\n\n"
+            markdown_content += "### 近期热门标题特征\n"
+            markdown_content += f"{trend_analysis.get('recent_trends', '')}\n\n"
             
             markdown_content += "### 季节性热点关键词\n"
-            seasonal_kws = trend_analysis.get('seasonal_hot_keywords', {})
-            if seasonal_kws:
-                for season, kws in seasonal_kws.items():
-                    markdown_content += f"- {season}: " + ", ".join(kws) + "\n"
+            seasonal_keywords = trend_analysis.get('seasonal_keywords', {})
+            for season, keywords in seasonal_keywords.items():
+                markdown_content += f"- {season}: {', '.join(keywords)}\n"
             markdown_content += "\n"
             
             # 最佳实践
@@ -164,13 +168,17 @@ def analyze_titles_with_deepseek(titles):
             markdown_content += f"- 标题长度建议: {best_practices.get('title_length_recommendation', '')}\n"
             markdown_content += f"- 推荐句式结构: {best_practices.get('recommended_sentence_structure', '')}\n"
             markdown_content += f"- 情感关键词使用: {best_practices.get('emotional_keyword_usage', '')}\n"
-            markdown_content += f"- 标点符号使用指南: {best_practices.get('punctuation_usage_guidelines', '')}\n\n"
+            markdown_content += f"- 标点符号使用指南: {best_practices.get('punctuation_guidelines', '')}\n\n"
             
             # 示例标题
             markdown_content += "## 示例标题\n"
-            for i, title in enumerate(analysis_json.get('example_titles', []), 1):
-                markdown_content += f"{i}. **{title.get('title', '')}**\n"
-                markdown_content += f"    - 特征: {title.get('features', '')}\n"
+            example_titles = analysis_json.get('example_titles', [])
+            for i, example in enumerate(example_titles, 1):
+                title = example.get('标题', '')
+                features = example.get('特征组合', '')
+                markdown_content += f"{i}. **{title}**\n"
+                markdown_content += f"    - 特征: {features}\n"
+            markdown_content += "\n"
             
             # Save to timestamp file
             with open(timestamp_file, 'w', encoding='utf-8') as md_file:
