@@ -118,8 +118,11 @@ def analyze_titles_with_deepseek(titles):
             
             markdown_content += "### 标题长度分布\n"
             length_dist = structure_stats.get('title_length_distribution', {})
-            for length, count in length_dist.items():
-                markdown_content += f"- {length}: {count}%\n"
+            if isinstance(length_dist, dict):
+                for length, count in length_dist.items():
+                    markdown_content += f"- {length}: {count}%\n"
+            else:
+                markdown_content += f"- {length_dist}\n"
             markdown_content += "\n"
             
             markdown_content += "### 标点符号使用频率\n"
