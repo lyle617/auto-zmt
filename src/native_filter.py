@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 from collections import defaultdict
 import re
+import logging
 
 __all__ = ['NaiveFilter', 'BSFilter', 'DFAFilter']
 __author__ = 'observer'
@@ -25,7 +26,9 @@ class NaiveFilter():
 
     def parse(self, path):
         for keyword in open(path):
-            self.keywords.add(keyword.strip().decode('utf-8').lower())
+            kw = keyword.strip().decode('utf-8').lower()
+            self.keywords.add(kw)
+            logging.info(f"NaiveFilter loaded keyword: {kw}")
 
     def filter(self, message, repl="*"):
         message = message.lower()
@@ -70,7 +73,9 @@ class BSFilter:
     def parse(self, path):
         with open(path, "r") as f:
             for keyword in f:
-                self.add(keyword.strip())
+                kw = keyword.strip()
+                self.add(kw)
+                logging.info(f"BSFilter loaded keyword: {kw}")
 
     def filter(self, message, repl="*"):
         # if not isinstance(message, unicode):
@@ -129,7 +134,9 @@ class DFAFilter():
     def parse(self, path):
         with open(path) as f:
             for keyword in f:
-                self.add(keyword.strip())
+                kw = keyword.strip()
+                self.add(kw)
+                logging.info(f"DFAFilter loaded keyword: {kw}")
 
     def filter(self, message, repl="*"):
         # if not isinstance(message, unicode):
