@@ -103,8 +103,9 @@ def analyze_titles_with_deepseek(titles):
             
             # 关键词组合模式
             markdown_content += "### 关键词组合模式\n"
-            for pattern in keyword_stats.get('keyword_combination_patterns', []):
-                markdown_content += f"  {pattern}\n"
+            combination_patterns = keyword_stats.get('keyword_combination_patterns', '')
+            if combination_patterns:
+                markdown_content += f"{combination_patterns}\n"
             markdown_content += "\n"
             
             # 结构统计
