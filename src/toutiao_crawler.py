@@ -50,7 +50,9 @@ class ToutiaoCrawler:
                     title = item.get('title', '')
                     publish_time = datetime.datetime.fromtimestamp(int(item.get('publish_time', 0))).strftime('%Y-%m-%d %H:%M')
 
-                    if item.get('like_count', 0) > self.config.MIN_LIKE_COUNT and item.get('comment_count', 0) > self.config.MIN_COMMENT_COUNT:
+                    if (item.get('like_count', 0) > self.config.MIN_LIKE_COUNT and 
+                        item.get('comment_count', 0) > self.config.MIN_COMMENT_COUNT and
+                        item.get('source', '') not in self.config.FILTER_SOURCES):
                         if title not in titles_written:
                             titles_written[title] = {
                                 'title': title,
@@ -134,7 +136,18 @@ class ToutiaoCrawler:
 
         # Filter and sort articles
         filtered_articles = self._filter_articles(deduplicated_articles)
-        sorted_articles = sorted(filtered_articles, key=lambda x: int(x['like_count']), reverse=True)[:self.config.MAX_TOP_ARTICLES]
+        
+        # Filter out articles from sources in FILTER_SOURCES
+        source_filtered_articles = [
+            article for article in filtered_articles 
+            if article.get('source', '') not in self.config.FILTER_SOURCES
+        ]
+        
+        # Sort by like_count and take top articles
+        sorted_articles = sorted(source_filtered_articles, key=lambda x: int(x['like_count']), reverse=True)[:self.config.MAX_TOP_ARTICLES]
+        
+        # Log filtering results
+        self.logger.info(f"Filtered out {len(filtered_articles) - len(source_filtered_articles)} articles from sources: {self.config.FILTER_SOURCES}")
 
         # Remove the 'has_video' field from each article
         for article in sorted_articles:

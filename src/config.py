@@ -4,7 +4,7 @@ import os
 class Config:
     # Crawler settings
     MAX_TOP_ARTICLES = 500
-    FILTER_SOURCES = ['央视网', '新华社', '央视新闻']
+    FILTER_SOURCES = ['央视网', '新华社', '央视新闻', '观察者网', '环球网']
     MIN_LIKE_COUNT = 100
     MIN_COMMENT_COUNT = 100
     MAX_PAGES = int(os.getenv('CRAWLER_MAX_PAGES', '5'))
