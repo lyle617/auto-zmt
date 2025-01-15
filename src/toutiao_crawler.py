@@ -156,13 +156,11 @@ class ToutiaoCrawler:
         ]
         self.logger.info(f"Final filtering removed {len(sorted_articles) - len(final_articles)} articles from sources: {self.config.FILTER_SOURCES}")
         
-        return final_articles
-
         # Remove the 'has_video' field from each article
-        for article in sorted_articles:
+        for article in final_articles:
             article.pop('has_video', None)
 
-        return sorted_articles
+        return final_articles
 
     def process_response(self, response, timestamp):
         """Process the response data and save to CSV files."""
