@@ -180,23 +180,36 @@ def analyze_titles_with_deepseek(titles):
                 markdown_content += f"    - 特征: {features}\n"
             markdown_content += "\n"
             
-            # Save JSON format
+            # Save JSON format with detailed logging
             json_timestamp_file = timestamp_file.replace('.md', '.json')
             json_latest_file = latest_file.replace('.md', '.json')
             json_backup_file = backup_file.replace('.md', '.json')
             
-            # Save JSON to timestamp file
+            # Log JSON file paths
+            logging.info(f"JSON timestamp file: {json_timestamp_file}")
+            logging.info(f"JSON latest file: {json_latest_file}")
+            logging.info(f"JSON backup file: {json_backup_file}")
+            
+            # Save JSON to timestamp file with size logging
             with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
                 json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
+                json_file_size = os.path.getsize(json_timestamp_file)
+                logging.info(f"Saved JSON to timestamp file. Size: {json_file_size} bytes")
             
             # Backup existing title_analysis_result.json if it exists
             if os.path.exists(json_latest_file):
-                logging.info(f"Backing up existing title_analysis_result.json to {json_backup_file}")
+                original_size = os.path.getsize(json_latest_file)
+                logging.info(f"Backing up existing title_analysis_result.json (size: {original_size} bytes) to {json_backup_file}")
                 os.rename(json_latest_file, json_backup_file)
+                backup_size = os.path.getsize(json_backup_file)
+                logging.info(f"Backup complete. Backup file size: {backup_size} bytes")
             
-            # Save JSON to latest file
+            # Save JSON to latest file with size logging
             with open(json_latest_file, 'w', encoding='utf-8') as json_file:
                 json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
+                latest_file_size = os.path.getsize(json_latest_file)
+                logging.info(f"Saved JSON to latest file. Size: {latest_file_size} bytes")
+                logging.info(f"JSON structure keys: {list(analysis_json.keys())}")
             
             # Save Markdown format
             with open(timestamp_file, 'w', encoding='utf-8') as md_file:
