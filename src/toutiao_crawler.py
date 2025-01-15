@@ -148,6 +148,15 @@ class ToutiaoCrawler:
         
         # Log filtering results
         self.logger.info(f"Filtered out {len(filtered_articles) - len(source_filtered_articles)} articles from sources: {self.config.FILTER_SOURCES}")
+        
+        # Additional filtering when writing to top_articles.csv
+        final_articles = [
+            article for article in sorted_articles
+            if article.get('source', '') not in self.config.FILTER_SOURCES
+        ]
+        self.logger.info(f"Final filtering removed {len(sorted_articles) - len(final_articles)} articles from sources: {self.config.FILTER_SOURCES}")
+        
+        return final_articles
 
         # Remove the 'has_video' field from each article
         for article in sorted_articles:
