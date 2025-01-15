@@ -180,7 +180,25 @@ def analyze_titles_with_deepseek(titles):
                 markdown_content += f"    - 特征: {features}\n"
             markdown_content += "\n"
             
-            # Save to timestamp file
+            # Save JSON format
+            json_timestamp_file = timestamp_file.replace('.md', '.json')
+            json_latest_file = latest_file.replace('.md', '.json')
+            json_backup_file = backup_file.replace('.md', '.json')
+            
+            # Save JSON to timestamp file
+            with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
+                json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
+            
+            # Backup existing title_analysis_result.json if it exists
+            if os.path.exists(json_latest_file):
+                logging.info(f"Backing up existing title_analysis_result.json to {json_backup_file}")
+                os.rename(json_latest_file, json_backup_file)
+            
+            # Save JSON to latest file
+            with open(json_latest_file, 'w', encoding='utf-8') as json_file:
+                json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
+            
+            # Save Markdown format
             with open(timestamp_file, 'w', encoding='utf-8') as md_file:
                 md_file.write(markdown_content)
             
@@ -189,14 +207,17 @@ def analyze_titles_with_deepseek(titles):
                 logging.info(f"Backing up existing title_analysis_result.md to {backup_file}")
                 os.rename(latest_file, backup_file)
             
-            # Copy new analysis to title_analysis_result.md
-            logging.info(f"Updating title_analysis_result.md with new analysis")
+            # Save Markdown to latest file
             with open(latest_file, 'w', encoding='utf-8') as md_file:
                 md_file.write(markdown_content)
         except json.JSONDecodeError:
             # If response is not JSON, save as plain text
             with open(timestamp_file, 'w', encoding='utf-8') as md_file:
                 md_file.write(f"# Analysis Result\n\n{analysis_data}")
+            # Also save as JSON with raw text
+            json_timestamp_file = timestamp_file.replace('.md', '.json')
+            with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
+                json.dump({"raw_text": analysis_data}, json_file, ensure_ascii=False, indent=2)
     else:
         logging.error("API call failed with status code: %s", response.status_code)
 
