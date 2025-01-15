@@ -1,5 +1,6 @@
 import logging
 import requests
+import time
 import json
 import csv
 import os
@@ -12,12 +13,19 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def analyze_titles_with_deepseek(titles):
     logging.info("Starting deepseek_api_call function")
+    logging.info(f"Number of titles to analyze: {len(titles)}")
+    logging.info("Sample titles:")
+    for i, title in enumerate(titles[:5], 1):
+        logging.info(f"{i}. {title}")
+    
     api_url = "https://api.deepseek.com/chat/completions"
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + os.getenv('DEEPSEEK_TOKEN')
     }
+    
+    logging.debug("API Headers configured")
     payload = json.dumps({
       "messages": [
         {
@@ -48,17 +56,43 @@ def analyze_titles_with_deepseek(titles):
     })
 
     logging.info("Sending API request to %s", api_url)
-    response = requests.request("POST", api_url, headers=headers, data=payload)
-    if response.status_code == 200:
-        logging.info("API call successful")
-        analysis_result = response.json()
-        logging.info("API response: %s", analysis_result['choices'][0]['message']['content'])
+    start_time = time.time()
+    try:
+        response = requests.request("POST", api_url, headers=headers, data=payload)
+        elapsed_time = time.time() - start_time
+        logging.info(f"API request completed in {elapsed_time:.2f} seconds")
+        
+        if response.status_code == 200:
+            logging.info("API call successful")
+            analysis_result = response.json()
+            
+            # Log API response metadata
+            logging.debug("API Response Metadata:")
+            logging.debug(f"- Model: {analysis_result.get('model', 'N/A')}")
+            logging.debug(f"- Usage: {analysis_result.get('usage', {})}")
+            logging.debug(f"- Created: {analysis_result.get('created', 'N/A')}")
+            
+            # Log first 200 characters of response content
+            response_content = analysis_result['choices'][0]['message']['content']
+            logging.info("API response preview: %s...", response_content[:200])
+            
+            # Log token usage
+            if 'usage' in analysis_result:
+                usage = analysis_result['usage']
+                logging.info(f"Token usage - Prompt: {usage.get('prompt_tokens', 'N/A')}, "
+                           f"Completion: {usage.get('completion_tokens', 'N/A')}, "
+                           f"Total: {usage.get('total_tokens', 'N/A')}")
 
         # Create the ./model directory if it doesn't exist
         model_dir = './model'
         if not os.path.exists(model_dir):
             logging.info("Creating directory: %s", model_dir)
-            os.makedirs(model_dir)
+            try:
+                os.makedirs(model_dir)
+                logging.info(f"Successfully created directory: {model_dir}")
+            except OSError as e:
+                logging.error(f"Failed to create directory {model_dir}: {str(e)}")
+                raise
 
         # Save the analysis result to a markdown file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -190,11 +224,17 @@ def analyze_titles_with_deepseek(titles):
             logging.info(f"JSON latest file: {json_latest_file}")
             logging.info(f"JSON backup file: {json_backup_file}")
             
-            # Save JSON to timestamp file with size logging
-            with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
-                json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
-                json_file_size = os.path.getsize(json_timestamp_file)
-                logging.info(f"Saved JSON to timestamp file. Size: {json_file_size} bytes")
+            # Save JSON to timestamp file with detailed logging
+            try:
+                with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
+                    json.dump(analysis_json, json_file, ensure_ascii=False, indent=2)
+                    json_file_size = os.path.getsize(json_timestamp_file)
+                    logging.info(f"Saved JSON to timestamp file: {json_timestamp_file}")
+                    logging.info(f"File size: {json_file_size} bytes")
+                    logging.debug(f"JSON structure keys: {list(analysis_json.keys())}")
+            except IOError as e:
+                logging.error(f"Failed to save JSON to {json_timestamp_file}: {str(e)}")
+                raise
             
             # Backup existing title_analysis_result.json if it exists
             if os.path.exists(json_latest_file):
@@ -231,8 +271,14 @@ def analyze_titles_with_deepseek(titles):
             json_timestamp_file = timestamp_file.replace('.md', '.json')
             with open(json_timestamp_file, 'w', encoding='utf-8') as json_file:
                 json.dump({"raw_text": analysis_data}, json_file, ensure_ascii=False, indent=2)
+    except requests.exceptions.RequestException as e:
+        logging.error(f"API request failed: {str(e)}", exc_info=True)
     else:
-        logging.error("API call failed with status code: %s", response.status_code)
+        if response.status_code != 200:
+            logging.error(f"API call failed with status code: {response.status_code}")
+            logging.error(f"Response content: {response.text[:500]}...")
+            logging.error(f"Request headers: {headers}")
+            logging.error(f"Request payload size: {len(payload)} bytes")
 
 def read_titles_from_csv(file_path):
     logging.info("Reading titles from CSV file: %s", file_path)
